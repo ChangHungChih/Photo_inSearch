@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/etAcc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="104dp"
+        android:ems="10"
+        android:hint="Account Name"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/etPwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        app:layout_constraintStart_toStartOf="@+id/etAcc"
+        app:layout_constraintTop_toBottomOf="@+id/etAcc" />
+
+    <Button
+        android:id="@+id/btnLogInSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:text="登入"
+        app:layout_constraintStart_toStartOf="@+id/tvMsg"
+        app:layout_constraintTop_toBottomOf="@+id/etPwd" />
+
+    <Button
+        android:id="@+id/btnLogInCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="39dp"
+        android:text="取消"
+        app:layout_constraintBaseline_toBaselineOf="@+id/btnLogInSubmit"
+        app:layout_constraintStart_toEndOf="@+id/btnLogInSubmit" />
+
+    <TextView
+        android:id="@+id/tvMsg"
+        android:layout_width="214dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="39dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnLogInCancel" />
+</android.support.constraint.ConstraintLayout>
