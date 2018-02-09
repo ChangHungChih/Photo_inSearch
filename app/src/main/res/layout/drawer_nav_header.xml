@@ -11,17 +11,19 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <TextView
+        android:id="@+id/tvUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="訪客"
         android:layout_gravity="bottom"
-        android:textSize="30sp" />
+        android:textSize="36sp" />
 
     <TextView
         android:id="@+id/tvSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:textSize="18sp"
         android:text="登入"
         android:clickable="true"
         />
@@ -31,6 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:textSize="18sp"
         android:text="登出"
         android:clickable="true"
         />

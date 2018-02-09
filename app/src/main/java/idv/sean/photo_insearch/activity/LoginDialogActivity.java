@@ -1,5 +1,6 @@
 package idv.sean.photo_insearch.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,11 +23,11 @@ import idv.sean.photo_insearch.util.Util;
 import idv.sean.photo_insearch.vo.MemVO;
 
 public class LoginDialogActivity extends AppCompatActivity {
-    private EditText account, pwd;
-    private Button  login, cancel;
-    private TextView message;
+    private EditText etAccount, etPassword;
+    private Button btnLogin, btnCancel;
+    private TextView tvMessage;
     private MemVO memVO = null;
-
+    private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,13 +37,13 @@ public class LoginDialogActivity extends AppCompatActivity {
     }
 
     public void findViews(){
-        account = (EditText) findViewById(R.id.etAcc);
-        pwd = (EditText)findViewById(R.id.etPwd);
-        login = (Button) findViewById(R.id.btnLogInSubmit);
-        cancel = (Button) findViewById(R.id.btnLogInCancel);
-        message = (TextView) findViewById(R.id.tvMsg);
+        etAccount = (EditText) findViewById(R.id.etAcc);
+        etPassword = (EditText)findViewById(R.id.etPwd);
+        btnLogin = (Button) findViewById(R.id.btnLogInSubmit);
+        btnCancel = (Button) findViewById(R.id.btnLogInCancel);
+        tvMessage = (TextView) findViewById(R.id.tvMsg);
 
-        cancel.setOnClickListener(new View.OnClickListener() {
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setResult(RESULT_CANCELED);
@@ -50,64 +51,66 @@ public class LoginDialogActivity extends AppCompatActivity {
             }
         });
 
-        login.setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String user = account.getText().toString().trim();
-                String password = pwd.getText().toString().trim();
-                if(user.length() == 0 || password.length() == 0){
+                String account = etAccount.getText().toString().trim();
+                String password = etPassword.getText().toString().trim();
+                if(account.length() == 0 || password.length() == 0){
                     showMessage("帳號或密碼錯誤");
                     return;
                 }
 
-                if(isUserValid(user,password)){
+                //帳密比對成功 進行登入  account and password is correct
+                if(isUserValid(account,password)){
                     SharedPreferences pref = getSharedPreferences("preference",MODE_PRIVATE);
-                    String memJson = new Gson().toJson(memVO);
+                    String memJson = gson.toJson(memVO);
+
+                    //將會員資料以Json字串 存入preference
+                    //save member data to preference by using json string
                     pref.edit()
                             .putBoolean("login",true)
-                            .putString("user",user)
-                            .putString("password",password)
                             .putString("memVO",memJson)
                             .apply();
-                    setResult(RESULT_OK);
+                    Intent intent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("memVO",memVO);
+                    intent.putExtras(bundle);
+                    setResult(RESULT_OK,intent);
                     finish();
+
                 }else{
                     showMessage("帳號或密碼錯誤");
                 }
             }
         });
 
-
     }
 
-    //檢查是否已經登入 check if login or not
+    //設登入過的帳密回輸入方塊 set logged account and password back
     @Override
     protected void onStart() {
         super.onStart();
 
         SharedPreferences pref = getSharedPreferences("preference",MODE_PRIVATE);
-        boolean login = pref.getBoolean("login",false);
-
-        if(login){
-            String name = pref.getString("user","");
-            String pwd = pref.getString("password","");
-            if(isUserValid(name,pwd)){
-                setResult(RESULT_OK);
-                finish();
-            }else {
-                showMessage("帳號或密碼錯誤");
-            }
-
+        String memJson = pref.getString("memVO","");
+        if(memJson.length() > 0){
+            memVO = gson.fromJson(memJson,MemVO.class);
+            String acc = memVO.getMem_acc();
+            String pwd = memVO.getMem_pwd();
+            etAccount.setText(acc);
+            etPassword.setText(pwd);
         }
+
     }
 
     private void showMessage(String mesStr){
-        message.setText(mesStr);
+        tvMessage.setText(mesStr);
     }
 
     private boolean isUserValid(String name, String pwd){
     // 連線至server端檢查帳號密碼是否正確
-        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+
         TextUploadTask textUploadTask = new TextUploadTask();
         JsonObject jsonIn;
 
@@ -118,9 +121,9 @@ public class LoginDialogActivity extends AppCompatActivity {
             if(jsonIn == null) {
                 return false;
             }
-
             memVO = gson.fromJson(jsonIn.toString(),MemVO.class);
-            Log.wtf("memVO",memVO.toString());
+
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -129,6 +132,5 @@ public class LoginDialogActivity extends AppCompatActivity {
 
         return (memVO != null);
     }
-
 
 }

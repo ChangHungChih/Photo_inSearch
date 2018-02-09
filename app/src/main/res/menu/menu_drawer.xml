@@ -4,18 +4,44 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/mem"
+            android:id="@+id/home"
+            android:checked="true"
             android:orderInCategory="1"
-            android:title="會員專區" />
+            android:title="首頁"/>
+
         <item
-            android:id="@+id/aboutUs"
+            android:id="@+id/mem"
             android:orderInCategory="2"
-            android:title="關於我們" />
+            android:title="會員專區" />
+
         <item
-            android:id="@+id/report"
+            android:id="@+id/news"
             android:orderInCategory="3"
-            android:title="意見回饋" />
+            android:title="最新消息"
+            />
+
+
     </group>
 
+    <item android:title="其他">
+        <group android:checkableBehavior="single">
+            <item
+                android:id="@+id/qapage"
+                android:orderInCategory="4"
+                android:title="Q &amp; A"
+                />
+
+            <item
+                android:id="@+id/aboutUs"
+                android:orderInCategory="5"
+                android:title="關於我們" />
+            <item
+                android:id="@+id/report"
+                android:orderInCategory="6"
+                android:title="意見回饋" />
+
+        </group>
+
+    </item>
 
 </menu>
