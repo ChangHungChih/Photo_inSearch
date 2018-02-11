@@ -6,10 +6,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,10 +25,12 @@ import idv.sean.photo_insearch.vo.Product;
 public class ProductFragment extends Fragment{
     private RecyclerView rvProduct;
     private List<Product> productList;
+    private ProductAdapter productAdapter;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         productList = new ArrayList<>();
         productList.add(new Product(R.drawable.cannon6d_markii,"Cannon 6D MarkII",50000));
         productList.add(new Product(R.drawable.cannon_powershot,"Canno Powershot",6000));
@@ -34,14 +38,20 @@ public class ProductFragment extends Fragment{
         productList.add(new Product(R.drawable.nikon_w100,"Nikon W100",35000));
         productList.add(new Product(R.drawable.olympus_e_m10_markiii,"Olympus E-M10 MarkIII",30000));
         productList.add(new Product(R.drawable.tamrom_lens,"Tamurom Lens for Nikon",18000));
+        productAdapter = new ProductAdapter(productList);
 
+    }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_photo,container,false);
         rvProduct = (RecyclerView) view.findViewById(R.id.recyclerView_photo);
         rvProduct.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
         rvProduct.setLayoutManager(layoutManager);
-        rvProduct.setAdapter(new ProductAdapter(productList));
+        rvProduct.setAdapter(productAdapter);
 
         return view;
     }
@@ -57,7 +67,8 @@ public class ProductFragment extends Fragment{
 
         @Override
         public ProductAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate( R.layout.gridview_product,parent,false);
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate( R.layout.gridview_product,parent,false);
             return new ViewHolder(view);
         }
 

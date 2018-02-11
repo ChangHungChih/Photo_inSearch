@@ -5,20 +5,17 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import java.util.concurrent.ExecutionException;
 
 import idv.sean.photo_insearch.R;
-import idv.sean.photo_insearch.util.TextUploadTask;
+import idv.sean.photo_insearch.util.TextTransferTask;
 import idv.sean.photo_insearch.util.Util;
 import idv.sean.photo_insearch.vo.MemVO;
 
@@ -27,13 +24,13 @@ public class LoginDialogActivity extends AppCompatActivity {
     private Button btnLogin, btnCancel;
     private TextView tvMessage;
     private MemVO memVO = null;
-    private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mem_login);
         findViews();
+        initButton();
     }
 
     public void findViews(){
@@ -42,6 +39,9 @@ public class LoginDialogActivity extends AppCompatActivity {
         btnLogin = (Button) findViewById(R.id.btnLogInSubmit);
         btnCancel = (Button) findViewById(R.id.btnLogInCancel);
         tvMessage = (TextView) findViewById(R.id.tvMsg);
+    }
+
+    public void initButton(){
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +50,7 @@ public class LoginDialogActivity extends AppCompatActivity {
                 finish();
             }
         });
+
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +65,7 @@ public class LoginDialogActivity extends AppCompatActivity {
                 //帳密比對成功 進行登入  account and password is correct
                 if(isUserValid(account,password)){
                     SharedPreferences pref = getSharedPreferences("preference",MODE_PRIVATE);
-                    String memJson = gson.toJson(memVO);
+                    String memJson = Util.gson.toJson(memVO);
 
                     //將會員資料以Json字串 存入preference
                     //save member data to preference by using json string
@@ -84,7 +85,6 @@ public class LoginDialogActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     //設登入過的帳密回輸入方塊 set logged account and password back
@@ -95,7 +95,7 @@ public class LoginDialogActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("preference",MODE_PRIVATE);
         String memJson = pref.getString("memVO","");
         if(memJson.length() > 0){
-            memVO = gson.fromJson(memJson,MemVO.class);
+            memVO = Util.gson.fromJson(memJson,MemVO.class);
             String acc = memVO.getMem_acc();
             String pwd = memVO.getMem_pwd();
             etAccount.setText(acc);
@@ -111,17 +111,17 @@ public class LoginDialogActivity extends AppCompatActivity {
     private boolean isUserValid(String name, String pwd){
     // 連線至server端檢查帳號密碼是否正確
 
-        TextUploadTask textUploadTask = new TextUploadTask();
+        TextTransferTask textTransferTask = new TextTransferTask();
         JsonObject jsonIn;
 
         try {
-            jsonIn = (JsonObject) textUploadTask
+            jsonIn = (JsonObject) textTransferTask
                     .execute(Util.LOGIN,Util.URL_ANDOROID_CONTROLLER,name,pwd).get();
 
             if(jsonIn == null) {
                 return false;
             }
-            memVO = gson.fromJson(jsonIn.toString(),MemVO.class);
+            memVO = Util.gson.fromJson(jsonIn.toString(),MemVO.class);
 
 
         } catch (InterruptedException e) {

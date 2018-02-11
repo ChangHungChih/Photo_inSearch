@@ -8,6 +8,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -18,10 +21,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Util {
-    public static final int LOGIN = 1;
-    public static final int TESTUPLOAD = 0;
+    public final static int LOGIN = 1;
+    public final static int CASES_ALL_DOWNLOAD = 2;
+    public final static int TESTUPLOAD = 0;
     public final static String URL_ANDOROID_CONTROLLER = "http://10.0.2.2:8081/PhotoinSearch_DBPractic//ForAndroidServlet";
     public final static String TAG = "GetRemoteData";
+    public final static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+
 
     public static byte[] bitmapToPNG(Bitmap srcBitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

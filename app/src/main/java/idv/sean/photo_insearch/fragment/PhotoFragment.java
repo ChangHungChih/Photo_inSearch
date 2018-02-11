@@ -1,13 +1,13 @@
 package idv.sean.photo_insearch.fragment;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,25 +17,31 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
-import idv.sean.photo_insearch.activity.ShowPhotoActivity;
-import idv.sean.photo_insearch.util.PhotoDownloadTask;
-import idv.sean.photo_insearch.util.Util;
 import idv.sean.photo_insearch.vo.Photo;
 import idv.sean.photo_insearch.R;
-import idv.sean.photo_insearch.vo.PhotoVO;
 
 public class PhotoFragment extends Fragment{
     private RecyclerView rvPhoto;
+    private List<Photo> photoList;
+    private PhotoAdapter photoAdapter;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    public PhotoFragment() {
+        photoList = new ArrayList<>();
+        photoList.add(new Photo(R.drawable.spring,"風景"));
+        photoList.add(new Photo(R.drawable.house,"實體商品"));
+        photoList.add(new Photo(R.drawable.autumn1,"接案區"));
+
+        photoAdapter = new PhotoAdapter(photoList);
+
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_photo,container,false);
         rvPhoto = (RecyclerView)view.findViewById(R.id.recyclerView_photo);
 
@@ -45,14 +51,7 @@ public class PhotoFragment extends Fragment{
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         //設定LayoutManager
         rvPhoto.setLayoutManager(layoutManager);
-
-        List<Photo> photoList = new ArrayList<>();
-        photoList.add(new Photo(R.drawable.spring,"風景"));
-        photoList.add(new Photo(R.drawable.house,"實體商品"));
-        photoList.add(new Photo(R.drawable.autumn1,"接案區"));
-
-
-        rvPhoto.setAdapter(new PhotoAdapter(photoList));
+        rvPhoto.setAdapter(photoAdapter);
 
         return view;
     }
@@ -69,7 +68,8 @@ public class PhotoFragment extends Fragment{
 
         @Override
         public PhotoAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cardview_photo,parent,false);
+            View view = LayoutInflater.from(parent.getContext()).
+                    inflate(R.layout.cardview_photo,parent,false);
             return new ViewHolder(view);
         }
 
@@ -81,7 +81,8 @@ public class PhotoFragment extends Fragment{
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(view.getContext(),photo.getTitle()+" clicked",Toast.LENGTH_SHORT).show();
+                    Toast.makeText
+                            (view.getContext(),photo.getTitle()+" clicked",Toast.LENGTH_SHORT).show();
 //                    if(position == 0){
 //                        PhotoDownloadTask photoDownloadTask;
 //                        Intent intent = new Intent();

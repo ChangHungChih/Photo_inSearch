@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import idv.sean.photo_insearch.R;
-import idv.sean.photo_insearch.util.TextUploadTask;
+import idv.sean.photo_insearch.util.TextTransferTask;
 import idv.sean.photo_insearch.util.Util;
 import idv.sean.photo_insearch.vo.PhotoVO;
 
@@ -41,7 +41,7 @@ public class ShowPhotoActivity extends AppCompatActivity {
     public void onSubmitClick(View v){
         String uploadText = etUpload.getText().toString();
         if(Util.networkConnected(this)){
-           new TextUploadTask().execute(Util.URL_ANDOROID_CONTROLLER, uploadText);
+           new TextTransferTask().execute(Util.URL_ANDOROID_CONTROLLER, uploadText);
         }else{
             Toast.makeText(this,"Network is not connected...",Toast.LENGTH_SHORT).show();
         }
