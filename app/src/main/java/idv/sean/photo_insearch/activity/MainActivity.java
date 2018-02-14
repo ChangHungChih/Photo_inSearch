@@ -7,6 +7,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -14,11 +17,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import idv.sean.photo_insearch.fragment.PhotoFragment;
 import idv.sean.photo_insearch.util.EndDrawerToggle;
 import idv.sean.photo_insearch.util.MyPagerAdapter;
 
@@ -91,6 +96,7 @@ public class MainActivity extends AppCompatActivity
         myToolBar.setTitle(R.string.title);
         myToolBar.setSubtitle("首頁");
         setSupportActionBar(myToolBar);
+
 
         //drawer setting
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
@@ -182,6 +188,7 @@ public class MainActivity extends AppCompatActivity
                 myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(),PAGER_HOME);
                 viewPager.setAdapter(myPagerAdapter);
                 myToolBar.setSubtitle("首頁");
+
                 break;
 
             case R.id.mem:
@@ -192,23 +199,27 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.news:
+                clearAllFragments();
                 myToolBar.setSubtitle("最新消息");
-
+                viewPager.setAdapter(null);
+//                switchFragment(new PhotoFragment());
                 break;
 
             case R.id.qapage:
+                clearAllFragments();
                 myToolBar.setSubtitle("Q & A");
 
                 break;
 
             case R.id.aboutUs:
+                clearAllFragments();
                 myToolBar.setSubtitle("關於我們");
 
                 break;
 
             case R.id.report:
-                myToolBar.setSubtitle("意見回饋");
                 clearAllFragments();
+                myToolBar.setSubtitle("意見回饋");
                 viewPager.setAdapter(null);
                 break;
         }
@@ -248,5 +259,11 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
+//    public void switchFragment(Fragment f){
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        fragmentTransaction.replace(R.id.linearlayout_main_body,f);
+//        fragmentTransaction.commit();
+//    }
 
 }
