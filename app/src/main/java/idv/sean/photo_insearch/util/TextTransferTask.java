@@ -22,7 +22,7 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
         switch (action) {
             //會員登入 Member Login
             //parameter[2] = mem_acc, parameter[3] = mem_pwd
-            case Util.LOGIN:
+            case Utils.LOGIN:
                 String name = (String) objects[2];
                 String password = (String) objects[3];
                 jsonObject.addProperty("action", "android_login");
@@ -31,7 +31,7 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
 
                 try {
                     //取得回傳Json字串  get Json String from web
-                    String jsonIn = Util.getRemoteData(url, jsonObject.toString());
+                    String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
 
                     //轉成JsonObject
                     Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
@@ -45,11 +45,11 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
 
                 break;
 
-            case Util.CASES_ALL_DOWNLOAD:
+            case Utils.CASES_ALL_DOWNLOAD:
                 jsonObject.addProperty("action","android_cases_all_download");
 
                 try {
-                    String jsonIn = Util.getRemoteData(url,jsonObject.toString());
+                    String jsonIn = Utils.getRemoteData(url,jsonObject.toString());
 
                     return jsonIn;
                 } catch (IOException e) {
@@ -58,13 +58,13 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
 
                 break;
 
-            case Util.TESTUPLOAD:
+            case Utils.TESTUPLOAD:
 
                 jsonObject.addProperty("action", "uploadText");
                 jsonObject.addProperty("text", (String) objects[2]);
 
                 try {
-                    Util.getRemoteData(url, jsonObject.toString());
+                    Utils.getRemoteData(url, jsonObject.toString());
                 } catch (IOException e) {
                     e.printStackTrace();
 

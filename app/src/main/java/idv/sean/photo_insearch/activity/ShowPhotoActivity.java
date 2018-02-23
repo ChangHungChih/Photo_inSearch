@@ -13,8 +13,8 @@ import android.widget.Toast;
 
 import idv.sean.photo_insearch.R;
 import idv.sean.photo_insearch.util.TextTransferTask;
-import idv.sean.photo_insearch.util.Util;
-import idv.sean.photo_insearch.vo.PhotoVO;
+import idv.sean.photo_insearch.util.Utils;
+import idv.sean.photo_insearch.model.PhotoVO;
 
 
 public class ShowPhotoActivity extends AppCompatActivity {
@@ -40,8 +40,8 @@ public class ShowPhotoActivity extends AppCompatActivity {
 
     public void onSubmitClick(View v){
         String uploadText = etUpload.getText().toString();
-        if(Util.networkConnected(this)){
-           new TextTransferTask().execute(Util.URL_ANDOROID_CONTROLLER, uploadText);
+        if(Utils.networkConnected(this)){
+           new TextTransferTask().execute(Utils.URL_ANDOROID_CONTROLLER, uploadText);
         }else{
             Toast.makeText(this,"Network is not connected...",Toast.LENGTH_SHORT).show();
         }

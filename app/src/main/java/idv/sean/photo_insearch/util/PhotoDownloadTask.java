@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 
 import java.io.IOException;
 
-import idv.sean.photo_insearch.vo.PhotoVO;
+import idv.sean.photo_insearch.model.PhotoVO;
 
 
 public class PhotoDownloadTask extends AsyncTask<Object, Integer, PhotoVO> {
@@ -22,7 +22,7 @@ public class PhotoDownloadTask extends AsyncTask<Object, Integer, PhotoVO> {
         jsonObject.addProperty("action", "getPhoto");
         PhotoVO photoVO = null;
         try {
-            String jsonIn = Util.getRemoteData(url, jsonObject.toString());
+            String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
             photoVO = gson.fromJson(jsonIn, PhotoVO.class);
         } catch (IOException e) {
             e.printStackTrace();

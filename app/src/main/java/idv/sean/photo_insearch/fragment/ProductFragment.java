@@ -6,12 +6,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import idv.sean.photo_insearch.R;
-import idv.sean.photo_insearch.vo.Product;
+import idv.sean.photo_insearch.model.Product;
 
 
 public class ProductFragment extends Fragment{

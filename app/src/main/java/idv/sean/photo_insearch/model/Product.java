@@ -1,4 +1,4 @@
-package idv.sean.photo_insearch.vo;
+package idv.sean.photo_insearch.model;
 
 
 public class Product {

@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import idv.sean.photo_insearch.R;
-import idv.sean.photo_insearch.util.Util;
-import idv.sean.photo_insearch.vo.MemVO;
+import idv.sean.photo_insearch.util.Utils;
+import idv.sean.photo_insearch.model.MemVO;
 
 
 public class MemberDetailFragment extends Fragment {
@@ -37,7 +36,7 @@ public class MemberDetailFragment extends Fragment {
 
         SharedPreferences pref = getActivity().getSharedPreferences
                 ("preference", Context.MODE_PRIVATE);
-        memVO = Util.gson.fromJson(pref.getString("memVO", ""), MemVO.class);
+        memVO = Utils.gson.fromJson(pref.getString("memVO", ""), MemVO.class);
         memberDetail = new ArrayList<>();
         memberDetail.add(new String[]{"會員帳號:", memVO.getMem_acc()});
         memberDetail.add(new String[]{"姓名:", memVO.getMem_name()});

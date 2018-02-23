@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-import idv.sean.photo_insearch.vo.Photo;
+import idv.sean.photo_insearch.model.Photo;
 import idv.sean.photo_insearch.R;
 
 public class PhotoFragment extends Fragment{
@@ -93,7 +92,7 @@ public class PhotoFragment extends Fragment{
 //                        PhotoVO photoVO = null;
 //
 //                        try {
-//                            photoVO = photoDownloadTask.execute(Util.URL_ANDOROID_CONTROLLER).get();
+//                            photoVO = photoDownloadTask.execute(Utils.URL_ANDOROID_CONTROLLER).get();
 //                        } catch (InterruptedException e) {
 //                            e.printStackTrace();
 //                        } catch (ExecutionException e) {

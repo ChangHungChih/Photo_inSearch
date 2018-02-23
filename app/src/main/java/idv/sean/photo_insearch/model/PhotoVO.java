@@ -1,4 +1,4 @@
-package idv.sean.photo_insearch.vo;
+package idv.sean.photo_insearch.model;
 
 import java.io.Serializable;
 import java.sql.Date;

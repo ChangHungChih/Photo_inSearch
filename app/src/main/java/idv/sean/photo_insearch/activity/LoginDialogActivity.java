@@ -16,8 +16,8 @@ import java.util.concurrent.ExecutionException;
 
 import idv.sean.photo_insearch.R;
 import idv.sean.photo_insearch.util.TextTransferTask;
-import idv.sean.photo_insearch.util.Util;
-import idv.sean.photo_insearch.vo.MemVO;
+import idv.sean.photo_insearch.util.Utils;
+import idv.sean.photo_insearch.model.MemVO;
 
 public class LoginDialogActivity extends AppCompatActivity {
     private EditText etAccount, etPassword;
@@ -65,7 +65,7 @@ public class LoginDialogActivity extends AppCompatActivity {
                 //帳密比對成功 進行登入  account and password is correct
                 if(isUserValid(account,password)){
                     SharedPreferences pref = getSharedPreferences("preference",MODE_PRIVATE);
-                    String memJson = Util.gson.toJson(memVO);
+                    String memJson = Utils.gson.toJson(memVO);
 
                     //將會員資料以Json字串 存入preference
                     //save member data to preference by using json string
@@ -95,7 +95,7 @@ public class LoginDialogActivity extends AppCompatActivity {
         SharedPreferences pref = getSharedPreferences("preference",MODE_PRIVATE);
         String memJson = pref.getString("memVO","");
         if(memJson.length() > 0){
-            memVO = Util.gson.fromJson(memJson,MemVO.class);
+            memVO = Utils.gson.fromJson(memJson,MemVO.class);
             String acc = memVO.getMem_acc();
             String pwd = memVO.getMem_pwd();
             etAccount.setText(acc);
@@ -116,12 +116,12 @@ public class LoginDialogActivity extends AppCompatActivity {
 
         try {
             jsonIn = (JsonObject) textTransferTask
-                    .execute(Util.LOGIN,Util.URL_ANDOROID_CONTROLLER,name,pwd).get();
+                    .execute(Utils.LOGIN, Utils.URL_ANDOROID_CONTROLLER,name,pwd).get();
 
             if(jsonIn == null) {
                 return false;
             }
-            memVO = Util.gson.fromJson(jsonIn.toString(),MemVO.class);
+            memVO = Utils.gson.fromJson(jsonIn.toString(),MemVO.class);
 
 
         } catch (InterruptedException e) {

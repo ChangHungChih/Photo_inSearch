@@ -22,8 +22,8 @@ import java.util.concurrent.ExecutionException;
 
 import idv.sean.photo_insearch.R;
 import idv.sean.photo_insearch.util.TextTransferTask;
-import idv.sean.photo_insearch.util.Util;
-import idv.sean.photo_insearch.vo.CasesVO;
+import idv.sean.photo_insearch.util.Utils;
+import idv.sean.photo_insearch.model.CasesVO;
 
 public class CaseFragment extends Fragment{
     RecyclerView rvCase;
@@ -38,7 +38,7 @@ public class CaseFragment extends Fragment{
         String jsonIn = null;
         try {
             jsonIn = (String) textTransferTask
-                    .execute(Util.CASES_ALL_DOWNLOAD,Util.URL_ANDOROID_CONTROLLER).get();
+                    .execute(Utils.CASES_ALL_DOWNLOAD, Utils.URL_ANDOROID_CONTROLLER).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -46,7 +46,7 @@ public class CaseFragment extends Fragment{
         }
 
         Type type = new TypeToken<List<CasesVO>>(){}.getType();
-        casesList = Util.gson.fromJson(jsonIn,type);
+        casesList = Utils.gson.fromJson(jsonIn,type);
     }
 
     @Nullable

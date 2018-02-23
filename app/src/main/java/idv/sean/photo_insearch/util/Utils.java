@@ -18,15 +18,29 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Util {
+public class Utils {
     public final static int LOGIN = 1;
     public final static int CASES_ALL_DOWNLOAD = 2;
     public final static int TESTUPLOAD = 0;
-    public final static String URL_ANDOROID_CONTROLLER = "http://10.0.2.2:8081/PhotoinSearch_DBPractic//ForAndroidServlet";
-    public final static String TAG = "GetRemoteData";
-    public final static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+//    public final static String URL_ANDOROID_CONTROLLER =
+//            "http://10.0.2.2:8081/PhotoinSearch_DBPractic//ForAndroidServlet";
+    public final static String URL_ANDOROID_CONTROLLER =
+        "http://10.120.26.10:8081/PhotoinSearch_DBPractic//ForAndroidServlet";
+
+    public final static String WEBSOCKET_URI =
+            "ws://10.120.26.10:8081/WebSocketChatAdvWeb/ChatWS/";
+
+    public final static String TAG = "Utils";
+    public final static String TAG_GET_REMOTE_DATA = "GetRemoteData";
+    public static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+    public static ChatWebSocketClient chatWebSocketClient;
+    private static List<String> usersList = new ArrayList<>();
 
 
     public static byte[] bitmapToPNG(Bitmap srcBitmap) {
@@ -72,7 +86,7 @@ public class Util {
 
         //傳送請求到網頁 send request to web
         bw.write(jsonOut);
-        Log.d(TAG, "jsonOut: " + jsonOut);
+        Log.d(TAG_GET_REMOTE_DATA, "jsonOut: " + jsonOut);
         bw.close();
 
         //從網頁取得回應 get response from web
@@ -85,14 +99,43 @@ public class Util {
                 jsonIn.append(line);
             }
         } else {
-            Log.d(TAG, "response code: " + responseCode);
+            Log.d(TAG_GET_REMOTE_DATA, "response code: " + responseCode);
         }
 
         connection.disconnect();
-        Log.d(TAG, "jsonIn: " + jsonIn);
+        Log.d(TAG_GET_REMOTE_DATA, "jsonIn: " + jsonIn);
 
         //回傳JSON字串  return Json String
         return jsonIn.toString();
+    }
+
+    public static void connectWebSocketServer(String userName, Context context){
+        if(chatWebSocketClient == null){
+            URI uri = null;
+            try {
+                uri =new URI(WEBSOCKET_URI+userName);
+            } catch (URISyntaxException e) {
+                Log.e(TAG, e.toString());
+            }
+            chatWebSocketClient = new ChatWebSocketClient(uri,context);
+            chatWebSocketClient.connect();
+        }
+    }
+
+    public static void disConnectWebSocketServer(){
+        if(chatWebSocketClient != null){
+            chatWebSocketClient.close();
+            chatWebSocketClient = null;
+        }
+        usersList.clear();
+    }
+
+    public static List<String> getUsersList(){
+        return usersList;
+    }
+
+    public static void setUsersList(List<String> usersList){
+        Utils.usersList = usersList;
     }
 
 }
