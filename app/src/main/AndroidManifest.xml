@@ -24,6 +24,8 @@
 
         <activity android:name=".activity.ShowPhotoActivity"/>
         <activity android:name=".activity.LoginDialogActivity"/>
+        <activity android:name=".activity.ChatActivity"/>
+
     </application>
 
 </manifest>

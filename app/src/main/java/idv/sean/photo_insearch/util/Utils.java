@@ -29,12 +29,12 @@ public class Utils {
     public final static int CASES_ALL_DOWNLOAD = 2;
     public final static int TESTUPLOAD = 0;
 //    public final static String URL_ANDOROID_CONTROLLER =
-//            "http://10.0.2.2:8081/PhotoinSearch_DBPractic//ForAndroidServlet";
+//            "http://10.0.2.2:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
     public final static String URL_ANDOROID_CONTROLLER =
-        "http://10.120.26.10:8081/PhotoinSearch_DBPractic//ForAndroidServlet";
+            "http://10.120.26.10:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
 
     public final static String WEBSOCKET_URI =
-            "ws://10.120.26.10:8081/WebSocketChatAdvWeb/ChatWS/";
+            "ws://10.120.26.10:8081/PhotoinSearch_DBPractic/AndroidChatWS/";
 
     public final static String TAG = "Utils";
     public final static String TAG_GET_REMOTE_DATA = "GetRemoteData";
@@ -50,7 +50,7 @@ public class Utils {
         return baos.toByteArray();
     }
 
-    /*
+    /**
      * options.inJustDecodeBounds取得原始圖片寬度與高度資訊 (但不會在記憶體裡建立實體)
      * 當輸出寬與高超過自訂邊長邊寬最大值，scale設為2 (寬變1/2，高變1/2)
      */
@@ -64,6 +64,27 @@ public class Utils {
             scale *= 2;
         }
         return scale;
+    }
+
+    public static Bitmap downSize(Bitmap srcBitmap, int newsize) {
+        if (newsize <= 50)
+            newsize = 128; //if too small, set newSize to 128
+
+        int srcWidth = srcBitmap.getWidth();
+        int srcHeight = srcBitmap.getHeight();
+        Log.d(TAG, "source image size = " + srcWidth + " x " + srcHeight);
+        int longer = Math.max(srcWidth, srcHeight);
+
+        if (longer > newsize) {
+            double scale = longer / (double) newsize;
+            int dsWidth = (int) (srcWidth / scale);
+            int dsHeight = (int) (srcHeight / scale);
+            srcBitmap = Bitmap.createScaledBitmap(srcBitmap, dsWidth, dsHeight, false);
+            System.gc();
+            Log.d(TAG, "\nscale = " + scale +
+                    "\nscaled image size = " + srcBitmap.getWidth() + " x " + srcBitmap.getHeight());
+        }
+        return srcBitmap;
     }
 
     public static boolean networkConnected(Context context) {
@@ -109,32 +130,32 @@ public class Utils {
         return jsonIn.toString();
     }
 
-    public static void connectWebSocketServer(String userName, Context context){
-        if(chatWebSocketClient == null){
+    public static void connectWebSocketServer(String userId, Context context) {
+        if (chatWebSocketClient == null) {
             URI uri = null;
             try {
-                uri =new URI(WEBSOCKET_URI+userName);
+                uri = new URI(WEBSOCKET_URI + userId);
             } catch (URISyntaxException e) {
                 Log.e(TAG, e.toString());
             }
-            chatWebSocketClient = new ChatWebSocketClient(uri,context);
+            chatWebSocketClient = new ChatWebSocketClient(uri, context);
             chatWebSocketClient.connect();
         }
     }
 
-    public static void disConnectWebSocketServer(){
-        if(chatWebSocketClient != null){
+    public static void disConnectWebSocketServer() {
+        if (chatWebSocketClient != null) {
             chatWebSocketClient.close();
             chatWebSocketClient = null;
         }
         usersList.clear();
     }
 
-    public static List<String> getUsersList(){
+    public static List<String> getUsersList() {
         return usersList;
     }
 
-    public static void setUsersList(List<String> usersList){
+    public static void setUsersList(List<String> usersList) {
         Utils.usersList = usersList;
     }
 

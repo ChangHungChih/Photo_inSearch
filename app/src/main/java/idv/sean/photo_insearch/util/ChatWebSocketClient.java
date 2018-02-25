@@ -11,6 +11,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import org.java_websocket.client.WebSocketClient;
@@ -29,11 +30,13 @@ public class ChatWebSocketClient extends WebSocketClient {
     private static final String TAG = "ChatWebSocketClient";
     private Context context;
     public static String userInChat;
+    private Gson gson;
 
     public ChatWebSocketClient(URI serverUri, Context context) {
         // Draft_17是連接協議，就是標準的RFC 6455（JSR256）
         super(serverUri, new Draft_17());
         this.context = context;
+        gson = new Gson();
     }
 
     @Override
@@ -57,12 +60,12 @@ public class ChatWebSocketClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         Log.d(TAG, "onMessage" + message);
-        JsonObject jsonObject = Utils.gson.fromJson(message, JsonObject.class);
+        JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
         // type: 訊息種類，有open(有user連線), close(有user離線), chat(其他user傳送來的聊天訊息)
         String type = jsonObject.get("type").getAsString();
 
         if (type.equals("chat")) {
-            ChatMessage chatMessage = Utils.gson.fromJson(message, ChatMessage.class);
+            ChatMessage chatMessage = gson.fromJson(message, ChatMessage.class);
 
             // 開啟聊天視窗後會將聊天對象儲存在friendInChat
             String text = "sender: " + chatMessage.getSender()

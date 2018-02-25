@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
                 signIn.setVisibility(View.INVISIBLE);
                 signOut.setVisibility(View.VISIBLE);
                 tvUser.setText(memVO.getMem_name());
-                Utils.connectWebSocketServer(memVO.getMem_name(),this);
+                Utils.connectWebSocketServer(memVO.getMem_id(),this);
 
             } else {//if memVO = null
                 login = false;
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity
                 signIn.setVisibility(View.INVISIBLE);
                 signOut.setVisibility(View.VISIBLE);
                 tvUser.setText(memVO.getMem_name());
-                Utils.connectWebSocketServer(memVO.getMem_name(),this);
+                Utils.connectWebSocketServer(memVO.getMem_id(),this);
             }
         }
 

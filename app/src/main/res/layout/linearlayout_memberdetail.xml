@@ -11,7 +11,7 @@
         android:id="@+id/tv_memkey"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:text="TextView" />
 
     <EditText
@@ -22,7 +22,7 @@
         android:layout_marginLeft="30dp"
         android:inputType="none"
         android:focusable="false"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:text="Name" />
 
 </LinearLayout>

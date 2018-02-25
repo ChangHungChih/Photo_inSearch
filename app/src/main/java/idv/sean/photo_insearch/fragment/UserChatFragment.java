@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +64,7 @@ public class UserChatFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
-            State stateMessage = Utils.gson.fromJson(message, State.class);
+            State stateMessage = new Gson().fromJson(message, State.class);
             String type = stateMessage.getType();
             String user = stateMessage.getUser();
             String member = activity.getMemberName();
