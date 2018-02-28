@@ -33,15 +33,15 @@ public class LoginDialogActivity extends AppCompatActivity {
         initButton();
     }
 
-    public void findViews(){
+    public void findViews() {
         etAccount = (EditText) findViewById(R.id.etAcc);
-        etPassword = (EditText)findViewById(R.id.etPwd);
+        etPassword = (EditText) findViewById(R.id.etPwd);
         btnLogin = (Button) findViewById(R.id.btnLogInSubmit);
         btnCancel = (Button) findViewById(R.id.btnLogInCancel);
         tvMessage = (TextView) findViewById(R.id.tvMsg);
     }
 
-    public void initButton(){
+    public void initButton() {
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,30 +57,24 @@ public class LoginDialogActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String account = etAccount.getText().toString().trim();
                 String password = etPassword.getText().toString().trim();
-                if(account.length() == 0 || password.length() == 0){
+                if (account.length() == 0 || password.length() == 0) {
                     showMessage("帳號或密碼錯誤");
                     return;
                 }
-
                 //帳密比對成功 進行登入  account and password is correct
-                if(isUserValid(account,password)){
-                    SharedPreferences pref = getSharedPreferences("preference",MODE_PRIVATE);
+                if (isUserValid(account, password)) {
+                    SharedPreferences pref = getSharedPreferences("preference", MODE_PRIVATE);
                     String memJson = Utils.gson.toJson(memVO);
 
                     //將會員資料以Json字串 存入preference
                     //save member data to preference by using json string
                     pref.edit()
-                            .putBoolean("login",true)
-                            .putString("memVO",memJson)
+                            .putBoolean("login", true)
+                            .putString("memVO", memJson)
                             .apply();
-                    Intent intent = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("memVO",memVO);
-                    intent.putExtras(bundle);
-                    setResult(RESULT_OK,intent);
+                    setResult(RESULT_OK);
                     finish();
-
-                }else{
+                } else {
                     showMessage("帳號或密碼錯誤");
                 }
             }
@@ -92,37 +86,35 @@ public class LoginDialogActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        SharedPreferences pref = getSharedPreferences("preference",MODE_PRIVATE);
-        String memJson = pref.getString("memVO","");
-        if(memJson.length() > 0){
-            memVO = Utils.gson.fromJson(memJson,MemVO.class);
+        SharedPreferences pref = getSharedPreferences("preference", MODE_PRIVATE);
+        String memJson = pref.getString("memVO", "");
+
+        if (memJson.length() > 0) {
+            memVO = Utils.gson.fromJson(memJson, MemVO.class);
             String acc = memVO.getMem_acc();
             String pwd = memVO.getMem_pwd();
             etAccount.setText(acc);
             etPassword.setText(pwd);
         }
-
     }
 
-    private void showMessage(String mesStr){
+    private void showMessage(String mesStr) {
         tvMessage.setText(mesStr);
     }
 
-    private boolean isUserValid(String name, String pwd){
-    // 連線至server端檢查帳號密碼是否正確
-
+    private boolean isUserValid(String name, String pwd) {
+        // 連線至server端檢查帳號密碼是否正確
         TextTransferTask textTransferTask = new TextTransferTask();
         JsonObject jsonIn;
-
         try {
             jsonIn = (JsonObject) textTransferTask
-                    .execute(Utils.LOGIN, Utils.URL_ANDOROID_CONTROLLER,name,pwd).get();
+                    .execute(Utils.LOGIN, Utils.URL_ANDOROID_CONTROLLER, name, pwd).get();
 
-            if(jsonIn == null) {
+            if (jsonIn == null) {
                 return false;
             }
-            memVO = Utils.gson.fromJson(jsonIn.toString(),MemVO.class);
 
+            memVO = Utils.gson.fromJson(jsonIn.toString(), MemVO.class);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -132,5 +124,4 @@ public class LoginDialogActivity extends AppCompatActivity {
 
         return (memVO != null);
     }
-
 }

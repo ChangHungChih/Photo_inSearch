@@ -1,22 +1,31 @@
 package idv.sean.photo_insearch.activity;
 
-
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import idv.sean.photo_insearch.model.State;
 import idv.sean.photo_insearch.util.EndDrawerToggle;
 import idv.sean.photo_insearch.util.MyPagerAdapter;
 
@@ -24,12 +33,16 @@ import idv.sean.photo_insearch.R;
 import idv.sean.photo_insearch.util.Utils;
 import idv.sean.photo_insearch.model.MemVO;
 
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final int REQ_LOGIN = 1;
-    private static final int PAGER_HOME = 1;
-    private static final int PAGER_MEM = 2;
+    public static final int REQ_LOGIN = 1;
+    public static final int PAGER_HOME = 1;
+    public static final int PAGER_MEM = 2;
+    public static final int PAGER_NEWS = 3;
+    public static final int PAGER_QA = 4;
+    public static final int PAGER_ABOUT_US = 5;
+    public static final int PAGER_REPORT = 6;
+    private final String TAG = "MainActivity";
     private TabLayout tabLayout;
     private Toolbar myToolBar;
     private ViewPager viewPager;
@@ -39,7 +52,6 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private SharedPreferences sharedPreferences;
     private boolean login;
-    private MemVO memVO;
     private MyPagerAdapter myPagerAdapter;
     private android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -62,21 +74,23 @@ public class MainActivity extends AppCompatActivity
         if (login) {//login = true
             String memJson = sharedPreferences.getString("memVO", "");
             if (memJson.length() > 0) { //if memVO not null
-                memVO = Utils.gson.fromJson(memJson, MemVO.class);
+                MemVO memVO = Utils.gson.fromJson(memJson, MemVO.class);
+                Utils.setMemVO(memVO);
                 signIn.setVisibility(View.INVISIBLE);
                 signOut.setVisibility(View.VISIBLE);
                 tvUser.setText(memVO.getMem_name());
-                Utils.connectWebSocketServer(memVO.getMem_id(),this);
-
+                //start webSocket
+                if (Utils.chatWebSocketClient == null) {
+                    registerUserStateMapReceiver();
+                    Utils.connectWebSocketServer(memVO.getMem_id(), this);
+                }
             } else {//if memVO = null
-                login = false;
                 sharedPreferences.edit().putBoolean("login", false).apply();
                 signIn.setVisibility(View.VISIBLE);
                 signOut.setVisibility(View.INVISIBLE);
             }
-
         } else {//login = false
-            memVO = null;
+            Utils.setMemVO(null);
             signIn.setVisibility(View.VISIBLE);
             signOut.setVisibility(View.INVISIBLE);
             tvUser.setText("訪客");
@@ -95,16 +109,14 @@ public class MainActivity extends AppCompatActivity
         //drawer setting
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         endDrawerToggle = new EndDrawerToggle
-                (this,drawerLayout,myToolBar,
-                        R.string.drawer_open,R.string.drawer_close);
+                (this, drawerLayout, myToolBar,
+                        R.string.drawer_open, R.string.drawer_close);
         drawerLayout.addDrawerListener(endDrawerToggle);
 
         navigationView = findViewById(R.id.navView);
-        /**************神!!*************/
+        /**let drawer can be touched */
         navigationView.bringToFront();
-        /**************神!!************/
         navigationView.setNavigationItemSelectedListener(MainActivity.this);
-
     }
 
     @Override
@@ -122,7 +134,6 @@ public class MainActivity extends AppCompatActivity
         //tab setting
         tabLayout = (TabLayout) findViewById(R.id.tabLayout_main);
         tabLayout.setupWithViewPager(viewPager);
-
     }
 
     public void initTextViewButton() {
@@ -136,7 +147,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 drawerLayout.closeDrawer(GravityCompat.END);
-
                 Intent loginIntent = new Intent
                         (MainActivity.this, LoginDialogActivity.class);
                 startActivityForResult(loginIntent, REQ_LOGIN);
@@ -146,14 +156,21 @@ public class MainActivity extends AppCompatActivity
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //clear login data
                 login = false;
                 sharedPreferences.edit().putBoolean("login", false).apply();
                 tvUser.setText("訪客");
                 signIn.setVisibility(View.VISIBLE);
                 signOut.setVisibility(View.INVISIBLE);
-                memVO = null;
+                Utils.setMemVO(null);
                 drawerLayout.closeDrawer(GravityCompat.END);
                 Utils.disConnectWebSocketServer();
+                //switch fragment to homepage
+                navigationView.getMenu().getItem(0).setChecked(true);
+                clearAllFragments();
+                myToolBar.setSubtitle("首頁");
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_HOME);
+                viewPager.setAdapter(myPagerAdapter);
             }
         });
     }
@@ -161,64 +178,67 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        //登入成功 設定會員資料   set member information after succeeded login
+        //登入成功 跳轉頁面   switch page after succeeded login
         if (requestCode == REQ_LOGIN) {
-            if (requestCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                memVO = (MemVO) bundle.getSerializable("memVO");
-                signIn.setVisibility(View.INVISIBLE);
-                signOut.setVisibility(View.VISIBLE);
-                tvUser.setText(memVO.getMem_name());
-                Utils.connectWebSocketServer(memVO.getMem_id(),this);
+            if (resultCode == RESULT_OK) {
+                //switch to member page
+                navigationView.getMenu().getItem(1).setChecked(true);
+                myToolBar.setSubtitle("會員專區");
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_MEM);
+                viewPager.setAdapter(myPagerAdapter);
             }
         }
-
     }
 
-    @Override
+    @Override                                               //switch fragment by drawer items
     public boolean onNavigationItemSelected(MenuItem item) {//抽屜選單選擇動作
         switch (item.getItemId()) {
             case R.id.home:
                 clearAllFragments();
-                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(),PAGER_HOME);
-                viewPager.setAdapter(myPagerAdapter);
                 myToolBar.setSubtitle("首頁");
-
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_HOME);
+                viewPager.setAdapter(myPagerAdapter);
                 break;
 
             case R.id.mem:
                 clearAllFragments();
-                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(),PAGER_MEM);
-                viewPager.setAdapter(myPagerAdapter);
                 myToolBar.setSubtitle("會員專區");
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_MEM);
+                viewPager.setAdapter(myPagerAdapter);
                 break;
 
             case R.id.news:
                 clearAllFragments();
                 myToolBar.setSubtitle("最新消息");
-                viewPager.setAdapter(null);
-//                switchFragment(new PhotoFragment());
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_NEWS);
+                viewPager.setAdapter(myPagerAdapter);
+                tabLayout.removeAllTabs();
                 break;
 
             case R.id.qapage:
                 clearAllFragments();
-                viewPager.setAdapter(null);
                 myToolBar.setSubtitle("Q & A");
-
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_QA);
+                viewPager.setAdapter(myPagerAdapter);
+                tabLayout.removeAllTabs();
                 break;
 
             case R.id.aboutUs:
                 clearAllFragments();
-                viewPager.setAdapter(null);
                 myToolBar.setSubtitle("關於我們");
-
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_ABOUT_US);
+                viewPager.setAdapter(myPagerAdapter);
+                tabLayout.removeAllTabs();
                 break;
 
             case R.id.report:
                 clearAllFragments();
                 myToolBar.setSubtitle("意見回饋");
-                viewPager.setAdapter(null);
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_REPORT);
+                viewPager.setAdapter(myPagerAdapter);
+                tabLayout.removeAllTabs();
+                break;
+            default:
                 break;
         }
 
@@ -227,8 +247,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void clearAllFragments(){//clear fragments in viewPager
-        for(int i = 0; i < myPagerAdapter.getCount(); i++) {
+    public void clearAllFragments() {//clear fragments in viewPager
+        for (int i = 0; i < myPagerAdapter.getCount(); i++) {
             fragmentManager.beginTransaction().remove(myPagerAdapter.getItem(i)).commit();
         }
         myPagerAdapter.clearAll();
@@ -244,10 +264,8 @@ public class MainActivity extends AppCompatActivity
             }
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onBackPressed() {//返回鍵動作
@@ -258,15 +276,56 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public String getMemberName(){
-        return memVO.getMem_name();
+    public void registerUserStateMapReceiver() {
+        IntentFilter openFilter = new IntentFilter("open");
+        IntentFilter closeFilter = new IntentFilter("close");
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+        UserStateMapReceiver mapReceiver = new UserStateMapReceiver(this);
+        broadcastManager.registerReceiver(mapReceiver, openFilter);
+        broadcastManager.registerReceiver(mapReceiver, closeFilter);
     }
 
+    // 攔截user WebSocket 連線或斷線的broadcast，並在更新在線名單
+    private class UserStateMapReceiver extends BroadcastReceiver {
+        private MainActivity activity;
 
-//    public void switchFragment(Fragment f){
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.linearlayout_main_body,f);
-//        fragmentTransaction.commit();
-//    }
+        public UserStateMapReceiver(MainActivity activity) {
+            this.activity = activity;
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            State stateMessage = Utils.gson.fromJson(message, State.class);
+            String type = stateMessage.getType();
+            String userId = stateMessage.getUserId();
+            String userName;
+
+            switch (type) {
+                case "open":    //when user connected
+                    //get all online users
+                    Map<String, String> userNamesMap = new HashMap<>(stateMessage.getUsersMap());
+                    //remove self from list
+                    // 將自己從聊天清單中移除，否則會看到自己在聊天清單上
+                    userNamesMap.remove(Utils.getMemVO().getMem_id());
+                    Utils.setUserNamesMap(userNamesMap);
+                    if (!userId.equals(Utils.getMemVO().getMem_id())) {//通知除了自己之外的人
+                        userName = stateMessage.getUsersMap().get(userId);
+                        Toast.makeText(activity, userName + " 上線了", Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+
+                case "close":   //when user disconnected remove from list
+                    userName = Utils.getUserNamesMap().get(userId);
+                    Utils.getUserNamesMap().remove(userId);
+                    Utils.getUserIdsList().remove(userId);
+
+                    Toast.makeText(activity, userName + " 離線了", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+            Log.d(TAG, "message: " + message);
+            Log.d(TAG, "usersNamesMap: " + Utils.getUserNamesMap());
+        }
+    }
 
 }

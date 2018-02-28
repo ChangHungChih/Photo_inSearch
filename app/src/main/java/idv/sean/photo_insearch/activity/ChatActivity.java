@@ -55,9 +55,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private ScrollView scrollView;
     private LinearLayout linearLayout;
     private ImageView ivCamera, ivPhotoChoose, ivSend;
-    private String user, memName;
+    private String userId, userName, memId, memName;
     private Uri contentUri, croppedImageUri;
-    private MemVO memVO;
     private Gson gson = new Gson();
 
     @Override
@@ -71,25 +70,28 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         //get member
         SharedPreferences preferences = getSharedPreferences("preference", MODE_PRIVATE);
         String memJson = preferences.getString("memVO", "");
-        memVO = Utils.gson.fromJson(memJson, MemVO.class);
+        MemVO memVO = Utils.gson.fromJson(memJson, MemVO.class);
         this.memName = memVO.getMem_name();
+        this.memId = memVO.getMem_id();
 
-        //get chatting user
-        user = getIntent().getStringExtra("user");
-        setTitle("User: " + user);
+        //get chatting userId
+        userId = getIntent().getStringExtra("userId");
+        userName = Utils.getUserNamesMap().get(userId);
+        setTitle("會員: " + userName);
 
         // message不為null代表這頁是由notification開啟，而非由FriendsFragment轉來
         String messageType = getIntent().getStringExtra("messageType");
         if (messageType != null) {
             String messageContent = getIntent().getStringExtra("messageContent");
+            Log.wtf(TAG,messageType+"////"+messageContent);
             switch (messageType) {
                 case "text":
-                    showMessage(user, messageContent, true);
+                    showMessage(userName, messageContent, true);
                     break;
                 case "image":
                     byte[] image = Base64.decode(messageContent, Base64.DEFAULT);
                     Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                    showImage(user, bitmap, true);
+                    showImage(userName, bitmap, true);
                     break;
                 default:
                     break;
@@ -102,7 +104,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         super.onStart();
         requestPermission_Storage();
         // 設定目前聊天對象
-        ChatWebSocketClient.userInChat = user;
+        ChatWebSocketClient.userInChat = userId;
     }
 
     private void handleViews() {
@@ -191,7 +193,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 etMessage.setText(null);
                 //send message by json
                 ChatMessage chatMessage = new ChatMessage
-                        ("chat", memVO.getMem_id(), user, message, "text");
+                        ("chat", memId, userId, message, "text");
                 String chatMessageJson = gson.toJson(chatMessage);
                 Utils.chatWebSocketClient.send(chatMessageJson);
                 Log.d(TAG, "output: " + chatMessageJson);
@@ -228,7 +230,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                         String message = Base64.encodeToString
                                 (Utils.bitmapToPNG(downsizedImage), Base64.DEFAULT);
                         ChatMessage chatMessage =
-                                new ChatMessage("chat", memName, user, message, "image");
+                                new ChatMessage("chat", memId, userId, message, "image");
                         String chatmessageJson = gson.toJson(chatMessage);
                         Utils.chatWebSocketClient.send(chatmessageJson);
                         Log.d(TAG, "output: " + chatmessageJson);
@@ -248,7 +250,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         croppedImageUri = Uri.fromFile(file);
         // take care of exceptions
         try {
-            // call the standard crop action intent (the user device may not support it)
+            // call the standard crop action intent (the userId device may not support it)
             Intent cropIntent = new Intent("com.android.camera.action.CROP");
             // the recipient of this Intent can read soruceImageUri's data
             cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -256,7 +258,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             cropIntent.setDataAndType(sourceImageUri, "image/*");
             // send crop message
             cropIntent.putExtra("crop", "true");
-            // aspect ratio of the cropped area, 0 means user define
+            // aspect ratio of the cropped area, 0 means userId define
             cropIntent.putExtra("aspectX", 0);   // this sets the max width
             cropIntent.putExtra("aspectY", 0);   // this sets the max height
             // output with and height, 0 keeps original size
@@ -350,19 +352,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         public void onReceive(Context context, Intent intent) {
             String message = intent.getStringExtra("message");
             ChatMessage chatMessage = gson.fromJson(message, ChatMessage.class);
-            String sender = chatMessage.getSender();
+            String userId = chatMessage.getSender();
+            String userName = Utils.getUserNamesMap().get(userId);
             String messageType = chatMessage.getMessageType();
 
             // 接收到聊天訊息，若發送者與目前聊天對象相同，就顯示訊息
-            if (sender.equals(user)) {
+            if (userId.equals(ChatActivity.this.userId)) {
                 switch (messageType) {
                     case "text":
-                        showMessage(sender, chatMessage.getContent(), true);
+                        showMessage(userName, chatMessage.getContent(), true);
                         break;
                     case "image":
                         byte[] image = Base64.decode(chatMessage.getContent(), Base64.DEFAULT);
                         Bitmap bitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                        showImage(sender, bitmap, true);
+                        showImage(userName, bitmap, true);
                         break;
                     default:
                         break;

@@ -20,7 +20,7 @@
             android:id="@+id/ivCamera"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_margin="6dp"
             android:src="@drawable/camera"
             />
 
@@ -28,7 +28,7 @@
             android:id="@+id/ivPhotoChoose"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_margin="6dp"
             android:src="@drawable/picture"
             />
 
@@ -52,7 +52,7 @@
                 android:id="@+id/ivSend"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="2dp"
+                android:layout_margin="6dp"
                 android:src="@drawable/chat"
                 />
 

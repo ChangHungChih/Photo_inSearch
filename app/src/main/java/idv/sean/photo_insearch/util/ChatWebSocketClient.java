@@ -25,7 +25,6 @@ import java.util.Locale;
 import idv.sean.photo_insearch.activity.ChatActivity;
 import idv.sean.photo_insearch.model.ChatMessage;
 
-
 public class ChatWebSocketClient extends WebSocketClient {
     private static final String TAG = "ChatWebSocketClient";
     private Context context;
@@ -67,7 +66,7 @@ public class ChatWebSocketClient extends WebSocketClient {
         if (type.equals("chat")) {
             ChatMessage chatMessage = gson.fromJson(message, ChatMessage.class);
 
-            // 開啟聊天視窗後會將聊天對象儲存在friendInChat
+            // 開啟聊天視窗後會將聊天對象儲存在userInChat
             String text = "sender: " + chatMessage.getSender()
                     + "\n userInChat: " + userInChat;
             Log.d(TAG, text);
@@ -105,8 +104,8 @@ public class ChatWebSocketClient extends WebSocketClient {
         Intent intent = new Intent(context, ChatActivity.class);
         Bundle bundle = new Bundle();
         // 將發送者、訊息種類與內容包在Notification內，方便之後開啟
-        bundle.putString("user", chatMessage.getSender());
-        bundle.putString("messageType", chatMessage.getType());
+        bundle.putString("userId", chatMessage.getSender());
+        bundle.putString("messageType", chatMessage.getMessageType());
         bundle.putString("messageContent", chatMessage.getContent());
         intent.putExtras(bundle);
         // 必須設定成FLAG_UPDATE_CURRENT，否則會用舊的Bundle
@@ -115,7 +114,7 @@ public class ChatWebSocketClient extends WebSocketClient {
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
-                .setContentTitle("message from " + chatMessage.getSender())
+                .setContentTitle("message from " + Utils.getUserNamesMap().get(chatMessage.getSender()))
                 .setSmallIcon(android.R.drawable.ic_menu_info_details)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)

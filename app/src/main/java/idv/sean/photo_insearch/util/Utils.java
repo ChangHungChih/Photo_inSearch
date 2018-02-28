@@ -1,6 +1,5 @@
 package idv.sean.photo_insearch.util;
 
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,13 +21,19 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import idv.sean.photo_insearch.model.MemVO;
 
 public class Utils {
+    public final static int TEST_UPLOAD = 0;
     public final static int LOGIN = 1;
     public final static int CASES_ALL_DOWNLOAD = 2;
-    public final static int TESTUPLOAD = 0;
-//    public final static String URL_ANDOROID_CONTROLLER =
+    public final static int SEND_MAIL = 3;
+    public final static int NEWS_ALL_DOWNLOAD = 4;
+    //    public final static String URL_ANDOROID_CONTROLLER =
 //            "http://10.0.2.2:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
     public final static String URL_ANDOROID_CONTROLLER =
             "http://10.120.26.10:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
@@ -40,8 +45,9 @@ public class Utils {
     public final static String TAG_GET_REMOTE_DATA = "GetRemoteData";
     public static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
     public static ChatWebSocketClient chatWebSocketClient;
-    private static List<String> usersList = new ArrayList<>();
-
+    private static Map<String, String> userNamesMap = new HashMap<>();
+    private static List<String> userIdsList = new ArrayList<>();
+    private static MemVO memVO;
 
     public static byte[] bitmapToPNG(Bitmap srcBitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -66,17 +72,17 @@ public class Utils {
         return scale;
     }
 
-    public static Bitmap downSize(Bitmap srcBitmap, int newsize) {
-        if (newsize <= 50)
-            newsize = 128; //if too small, set newSize to 128
+    public static Bitmap downSize(Bitmap srcBitmap, int newSize) {
+        if (newSize <= 50)
+            newSize = 128; //if too small, set newSize to 128
 
         int srcWidth = srcBitmap.getWidth();
         int srcHeight = srcBitmap.getHeight();
         Log.d(TAG, "source image size = " + srcWidth + " x " + srcHeight);
         int longer = Math.max(srcWidth, srcHeight);
 
-        if (longer > newsize) {
-            double scale = longer / (double) newsize;
+        if (longer > newSize) {
+            double scale = longer / (double) newSize;
             int dsWidth = (int) (srcWidth / scale);
             int dsHeight = (int) (srcHeight / scale);
             srcBitmap = Bitmap.createScaledBitmap(srcBitmap, dsWidth, dsHeight, false);
@@ -131,16 +137,14 @@ public class Utils {
     }
 
     public static void connectWebSocketServer(String userId, Context context) {
-        if (chatWebSocketClient == null) {
-            URI uri = null;
-            try {
-                uri = new URI(WEBSOCKET_URI + userId);
-            } catch (URISyntaxException e) {
-                Log.e(TAG, e.toString());
-            }
-            chatWebSocketClient = new ChatWebSocketClient(uri, context);
-            chatWebSocketClient.connect();
+        URI uri = null;
+        try {
+            uri = new URI(WEBSOCKET_URI + userId);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, e.toString());
         }
+        chatWebSocketClient = new ChatWebSocketClient(uri, context);
+        chatWebSocketClient.connect();
     }
 
     public static void disConnectWebSocketServer() {
@@ -148,15 +152,31 @@ public class Utils {
             chatWebSocketClient.close();
             chatWebSocketClient = null;
         }
-        usersList.clear();
+        userNamesMap.clear();
     }
 
-    public static List<String> getUsersList() {
-        return usersList;
+    public static Map<String, String> getUserNamesMap() {
+        return userNamesMap;
     }
 
-    public static void setUsersList(List<String> usersList) {
-        Utils.usersList = usersList;
+    public static void setUserNamesMap(Map<String, String> userNamesMap) {
+        Utils.userNamesMap = userNamesMap;
+        setUserIdsList(new ArrayList<String>(userNamesMap.keySet()));
     }
 
+    public static List<String> getUserIdsList() {
+        return userIdsList;
+    }
+
+    public static void setUserIdsList(List<String> list) {
+        Utils.userIdsList = list;
+    }
+
+    public static void setMemVO(MemVO memVO) {
+        Utils.memVO = memVO;
+    }
+
+    public static MemVO getMemVO() {
+        return memVO;
+    }
 }

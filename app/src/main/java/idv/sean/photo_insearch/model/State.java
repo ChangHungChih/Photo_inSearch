@@ -1,21 +1,21 @@
 package idv.sean.photo_insearch.model;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.Map;
 
 public class State implements Serializable {
 
     private String type;
-    private String user;            //the user changing state
-    private Set<String> users;      //total users
+    private String userId;            //the userId changing state
+    private Map<String, String> usersMap;      //total usersMap
 
     public State() {
     }
 
-    public State(String type, String user, Set<String> users) {
+    public State(String type, String userId, Map<String, String> usersMap) {
         this.type = type;
-        this.user = user;
-        this.users = users;
+        this.userId = userId;
+        this.usersMap = usersMap;
     }
 
     public String getType() {
@@ -26,19 +26,19 @@ public class State implements Serializable {
         this.type = type;
     }
 
-    public String getUser() {
-        return user;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public Set<String> getUsers() {
-        return users;
+    public Map<String, String> getUsersMap() {
+        return usersMap;
     }
 
-    public void setUsers(Set<String> users) {
-        this.users = users;
+    public void setUsersMap(Map<String, String> usersMap) {
+        this.usersMap = usersMap;
     }
 }

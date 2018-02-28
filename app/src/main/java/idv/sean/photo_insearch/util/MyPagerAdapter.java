@@ -8,8 +8,13 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import idv.sean.photo_insearch.activity.MainActivity;
+import idv.sean.photo_insearch.fragment.AboutUsFragment;
 import idv.sean.photo_insearch.fragment.CaseFragment;
 import idv.sean.photo_insearch.fragment.MemberDetailFragment;
+import idv.sean.photo_insearch.fragment.NewsFragment;
+import idv.sean.photo_insearch.fragment.QAFragment;
+import idv.sean.photo_insearch.fragment.ReportFragment;
 import idv.sean.photo_insearch.fragment.UserChatFragment;
 import idv.sean.photo_insearch.fragment.PhotoFragment;
 import idv.sean.photo_insearch.fragment.ProductFragment;
@@ -18,22 +23,39 @@ import idv.sean.photo_insearch.model.Page;
 public class MyPagerAdapter extends FragmentStatePagerAdapter {
     List<Page> pageList;
 
-
     public MyPagerAdapter(FragmentManager fm, int pagerCode) {
         super(fm);
         pageList = new ArrayList<>();
+        switch (pagerCode){
+            case MainActivity.PAGER_HOME:
+                pageList.add(new Page(new PhotoFragment(), "Photos"));
+                pageList.add(new Page(new ProductFragment(), "Products"));
+                pageList.add(new Page(new CaseFragment(), "Cases"));
+                break;
 
-        if(pagerCode == 1) {
-            pageList.add(new Page(new PhotoFragment(), "Photos"));
-            pageList.add(new Page(new ProductFragment(), "Products"));
-            pageList.add(new Page(new CaseFragment(), "Cases"));
-        }
+            case MainActivity.PAGER_MEM:
+                pageList.add(new Page(new MemberDetailFragment(), "Detail"));
+                pageList.add(new Page(new UserChatFragment(),"Chat"));
+                pageList.add(new Page(new CaseFragment(), "MyCases"));
+                break;
 
-        if(pagerCode == 2){
-            pageList.add(new Page(new UserChatFragment(),"Chat"));
-            pageList.add(new Page(new CaseFragment(), "MyCases"));
-            pageList.add(new Page(new MemberDetailFragment(), "Detail"));
+            case MainActivity.PAGER_NEWS:
+                pageList.add(new Page(new NewsFragment(), "News"));
+                break;
 
+            case MainActivity.PAGER_QA:
+                pageList.add(new Page(new QAFragment(), "Q & A"));
+                break;
+
+            case MainActivity.PAGER_ABOUT_US:
+                pageList.add(new Page(new AboutUsFragment(), "AboutUs"));
+                break;
+
+            case MainActivity.PAGER_REPORT:
+                pageList.add(new Page(new ReportFragment(), "Report"));
+                break;
+            default:
+                break;
         }
     }
 

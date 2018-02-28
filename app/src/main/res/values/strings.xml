@@ -3,4 +3,11 @@
     <string name="title">Photo inSearch</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="qanda">各類 Q &amp; A</string>
+    <string name="aboutUs"> 我們是一個簡單又安全的友善交易及合作平台，
+        鑑於目前網路上圖片相片的智慧財產相關法律知識日趨普及，
+        卻礙於中文的交易平台相對稀少。為了提倡使用者付費及保障攝影的創作資產，
+        我們想透過這個平台讓攝影者與圖片使用者有更友善的交易環境。
+        您可透過我們的網站購買專業圖片、上傳您的專業作品為自己賺取費用、購買所需要的攝影器材、
+        及透過發案及接案合作專區，找到您符合需求的攝影師及找到您想進行接案的案件。</string>
 </resources>

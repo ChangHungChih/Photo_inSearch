@@ -29,9 +29,29 @@ public class PhotoFragment extends Fragment{
         super.onCreate(savedInstanceState);
 
         photoList = new ArrayList<>();
-        photoList.add(new Photo(R.drawable.spring,"風景"));
-        photoList.add(new Photo(R.drawable.house,"實體商品"));
-        photoList.add(new Photo(R.drawable.autumn1,"接案區"));
+        photoList.add(new Photo(R.drawable.p01,"風景"));
+        photoList.add(new Photo(R.drawable.p02,"人像"));
+        photoList.add(new Photo(R.drawable.p03,"紀實"));
+        photoList.add(new Photo(R.drawable.p04,"商品"));
+        photoList.add(new Photo(R.drawable.p05,"生態"));
+        photoList.add(new Photo(R.drawable.p06,"概念"));
+        photoList.add(new Photo(R.drawable.p07,"藝術"));
+        photoList.add(new Photo(R.drawable.p08,"新聞"));
+        photoList.add(new Photo(R.drawable.p09,"婚紗"));
+        photoList.add(new Photo(R.drawable.p10,"時裝"));
+        photoList.add(new Photo(R.drawable.p11,"美食"));
+        photoList.add(new Photo(R.drawable.p12,"飛機"));
+        photoList.add(new Photo(R.drawable.p13,"鐵道"));
+        photoList.add(new Photo(R.drawable.p14,"建築"));
+        photoList.add(new Photo(R.drawable.p15,"廢墟"));
+        photoList.add(new Photo(R.drawable.p16,"黑白"));
+        photoList.add(new Photo(R.drawable.p17,"微距"));
+        photoList.add(new Photo(R.drawable.p18,"家庭"));
+        photoList.add(new Photo(R.drawable.p19,"天文"));
+        photoList.add(new Photo(R.drawable.p20,"空中"));
+        photoList.add(new Photo(R.drawable.p21,"水中"));
+        photoList.add(new Photo(R.drawable.p22,"動物"));
+        photoList.add(new Photo(R.drawable.p23,"其他"));
 
         photoAdapter = new PhotoAdapter(photoList);
 

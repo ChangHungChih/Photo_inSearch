@@ -21,7 +21,9 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import idv.sean.photo_insearch.R;
 import idv.sean.photo_insearch.activity.ChatActivity;
@@ -33,18 +35,19 @@ public class UserChatFragment extends Fragment {
     private static final String TAG = "UserChatFragment";
     private RecyclerView rvUsers;
     private LocalBroadcastManager broadcastManager;
-    private List<String> usersList;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-           @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
-
         View view = inflater.inflate(R.layout.fragment_member, container, false);
+
+        // 初始化LocalBroadcastManager並註冊BroadcastReceiver
         broadcastManager = LocalBroadcastManager.getInstance(getActivity());
         registerUserStateReceiver();
 
+        // 初始化聊天清單
         rvUsers = view.findViewById(R.id.recyclerView_member);
         rvUsers.setLayoutManager(new LinearLayoutManager(activity));
         rvUsers.setAdapter(new UserAdapter(activity));
@@ -52,51 +55,11 @@ public class UserChatFragment extends Fragment {
         return view;
     }
 
-
-    // 攔截user連線或斷線的broadcast，並在RecyclerView呈現
+    // 攔截user連線或斷線的broadcast，更新RecyclerView
     private class UserStateReceiver extends BroadcastReceiver {
-        private MainActivity activity;
-
-        public UserStateReceiver(MainActivity activity) {
-            this.activity = activity;
-        }
-
         @Override
         public void onReceive(Context context, Intent intent) {
-            String message = intent.getStringExtra("message");
-            State stateMessage = new Gson().fromJson(message, State.class);
-            String type = stateMessage.getType();
-            String user = stateMessage.getUser();
-            String member = activity.getMemberName();
-
-            switch (type) {
-                case "open":    //when user connected
-                    if (user.equals(member)) { //self connected
-                        //get all online users
-                        usersList = new ArrayList<>(stateMessage.getUsers());
-                        Utils.setUsersList(usersList);
-                        //remove self from list
-                        // 將自己從聊天清單中移除，否則會看到自己在聊天清單上
-                        usersList.remove(member);
-                    } else {
-                        if (!Utils.getUsersList().contains(user)) {
-                            Utils.getUsersList().add(user);
-                        }
-                        Toast.makeText(activity, user + " 上線了", Toast.LENGTH_SHORT).show();
-                    }
-                    //refresh usersList
-                    rvUsers.getAdapter().notifyDataSetChanged();
-                    break;
-
-                case "close":   //when user disconnected remove from list
-                    Utils.getUsersList().remove(user);
-                    //refresh usersList
-                    rvUsers.getAdapter().notifyDataSetChanged();
-                    Toast.makeText(activity, user + " 離線了", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-            Log.d(TAG, "message: " + message);
-            Log.d(TAG, "usersList: " + Utils.getUsersList());
+            rvUsers.getAdapter().notifyDataSetChanged();
         }
     }
 
@@ -117,15 +80,17 @@ public class UserChatFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(UserViewHolder holder, int position) {
-            final String user = Utils.getUsersList().get(position);
-            holder.tvUser.setText(user);
+            final String userId = Utils.getUserIdsList().get(position);
+            final String userName = Utils.getUserNamesMap().get(userId);
+
+            holder.tvUser.setText(userName);
             // 點選聊天清單上的user即開啟聊天頁面
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(activity, ChatActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putString("user",user);
+                    bundle.putString("userId", userId);
                     intent.putExtras(bundle);
                     activity.startActivity(intent);
                 }
@@ -134,7 +99,7 @@ public class UserChatFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return Utils.getUsersList().size();
+            return Utils.getUserIdsList().size();
         }
 
         class UserViewHolder extends RecyclerView.ViewHolder {
@@ -149,10 +114,9 @@ public class UserChatFragment extends Fragment {
     }
 
     private void registerUserStateReceiver() {
-        MainActivity activity = (MainActivity) getActivity();
         IntentFilter openFilter = new IntentFilter("open");
         IntentFilter closeFilter = new IntentFilter("close");
-        UserStateReceiver userStateReceiver = new UserStateReceiver(activity);
+        UserStateReceiver userStateReceiver = new UserStateReceiver();
         broadcastManager.registerReceiver(userStateReceiver, openFilter);
         broadcastManager.registerReceiver(userStateReceiver, closeFilter);
     }
