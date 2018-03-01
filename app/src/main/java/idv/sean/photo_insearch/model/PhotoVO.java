@@ -15,26 +15,11 @@ public class PhotoVO implements Serializable {
     private Date photo_date;
     private String photo_state;
     private String emp_id;
+    private String picBase64;
 
 
     public PhotoVO() {
         super();
-    }
-
-
-    public PhotoVO(String photo_id, String mem_id, String type_id, String photo_name, String photo_des, byte[] photo_pic,
-                   Integer photo_pric, Date photo_date, String photo_state, String emp_id) {
-        super();
-        this.photo_id = photo_id;
-        this.mem_id = mem_id;
-        this.type_id = type_id;
-        this.photo_name = photo_name;
-        this.photo_des = photo_des;
-        this.photo_pic = photo_pic;
-        this.photo_pric = photo_pric;
-        this.photo_date = photo_date;
-        this.photo_state = photo_state;
-        this.emp_id = emp_id;
     }
 
 
@@ -137,4 +122,11 @@ public class PhotoVO implements Serializable {
         this.emp_id = emp_id;
     }
 
+    public String getPicBase64() {
+        return picBase64;
+    }
+
+    public void setPicBase64(String picBase64) {
+        this.picBase64 = picBase64;
+    }
 }

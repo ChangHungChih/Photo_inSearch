@@ -1,6 +1,7 @@
 package idv.sean.photo_insearch.fragment;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,8 +17,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import idv.sean.photo_insearch.activity.ShowPhotoActivity;
 import idv.sean.photo_insearch.model.Photo;
 import idv.sean.photo_insearch.R;
+import idv.sean.photo_insearch.util.Utils;
 
 public class PhotoFragment extends Fragment{
     private RecyclerView rvPhoto;
@@ -100,32 +104,12 @@ public class PhotoFragment extends Fragment{
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText
-                            (view.getContext(),photo.getTitle()+" clicked",Toast.LENGTH_SHORT).show();
-//                    if(position == 0){
-//                        PhotoDownloadTask photoDownloadTask;
-//                        Intent intent = new Intent();
-//                        intent.setClass(getContext(), ShowPhotoActivity.class);
-//                        Bundle bundle = new Bundle();
-//                        photoDownloadTask = new PhotoDownloadTask();
-//
-//                        PhotoVO photoVO = null;
-//
-//                        try {
-//                            photoVO = photoDownloadTask.execute(Utils.URL_ANDOROID_CONTROLLER).get();
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        } catch (ExecutionException e) {
-//                            e.printStackTrace();
-//                        }
-//                        if(photoVO == null){
-//                            Toast.makeText(getContext(),"photo is null",Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
-//                        bundle.putSerializable("photo",photoVO);
-//                        intent.putExtras(bundle);
-//                        startActivity(intent);
-//                    }
+                    Intent intent = new Intent(getContext(), ShowPhotoActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("typeId", "PTT0" + Utils.photoType.get(photo.getTitle()));
+                    bundle.putString("title", photo.getTitle());
+                    intent.putExtras(bundle);
+                    getContext().startActivity(intent);
                 }
             });
         }

@@ -11,21 +11,9 @@ public class ProductVO implements Serializable {
     private Integer prod_status;
     private String prod_detil;
     private byte[] prod_pic;
+    private String picBase64;
 
     public ProductVO() {
-    }
-
-    public ProductVO(String prod_id, String prod_type_id, String brand_id,
-                     String prod_name, Integer prod_price, Integer prod_status,
-                     String prod_detil, byte[] prod_pic) {
-        this.prod_id = prod_id;
-        this.prod_type_id = prod_type_id;
-        this.brand_id = brand_id;
-        this.prod_name = prod_name;
-        this.prod_price = prod_price;
-        this.prod_status = prod_status;
-        this.prod_detil = prod_detil;
-        this.prod_pic = prod_pic;
     }
 
     public String getProd_id() {
@@ -90,5 +78,13 @@ public class ProductVO implements Serializable {
 
     public void setProd_pic(byte[] prod_pic) {
         this.prod_pic = prod_pic;
+    }
+
+    public String getPicBase64() {
+        return picBase64;
+    }
+
+    public void setPicBase64(String picBase64) {
+        this.picBase64 = picBase64;
     }
 }

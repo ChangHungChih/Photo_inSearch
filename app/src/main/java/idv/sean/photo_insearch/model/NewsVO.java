@@ -11,19 +11,9 @@ public class NewsVO implements Serializable {
     private Date news_date;     /*發佈日期*/
     private byte[] news_pic;    /*消息圖片*/
     private String emp_id;      /*處理員工編號*/
+    private String picBase64;   /*圖片傳輸用*/
 
     public NewsVO() {
-    }
-
-    public NewsVO(String news_id, String news_type, String title,
-                  String article, Date news_date, byte[] news_pic, String emp_id) {
-        this.news_id = news_id;
-        this.news_type = news_type;
-        this.title = title;
-        this.article = article;
-        this.news_date = news_date;
-        this.news_pic = news_pic;
-        this.emp_id = emp_id;
     }
 
     public String getNews_id() {
@@ -80,5 +70,13 @@ public class NewsVO implements Serializable {
 
     public void setEmp_id(String emp_id) {
         this.emp_id = emp_id;
+    }
+
+    public String getPicBase64() {
+        return picBase64;
+    }
+
+    public void setPicBase64(String picBase64) {
+        this.picBase64 = picBase64;
     }
 }

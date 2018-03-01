@@ -19,8 +19,6 @@
         app:headerLayout="@layout/drawer_nav_header"
         app:menu="@menu/menu_drawer"/>
 
-
-
     <android.support.constraint.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"

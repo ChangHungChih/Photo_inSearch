@@ -1,54 +1,46 @@
 package idv.sean.photo_insearch.fragment;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import idv.sean.photo_insearch.R;
 import idv.sean.photo_insearch.model.NewsVO;
+import idv.sean.photo_insearch.model.ProductVO;
 import idv.sean.photo_insearch.util.TextTransferTask;
 import idv.sean.photo_insearch.util.Utils;
 
 public class NewsFragment extends Fragment {
     RecyclerView rvNews;
-    List<NewsVO> newsList;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        TextTransferTask task = new TextTransferTask();
-        String jsonIn = null;
-        try {
-            jsonIn = (String) task.execute
-                    (Utils.NEWS_ALL_DOWNLOAD, Utils.URL_ANDOROID_CONTROLLER).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        Type type = new TypeToken<List<NewsVO>>() {
-        }.getType();
-        newsList = Utils.gson.fromJson(jsonIn, type);
-    }
+    ProgressDialog dialog;
 
     @Nullable
     @Override
@@ -60,7 +52,8 @@ public class NewsFragment extends Fragment {
         rvNews.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         rvNews.setLayoutManager(layoutManager);
-        rvNews.setAdapter(new NewsAdapter(newsList));
+        new NewsDownloadTask().execute(Utils.URL_ANDOROID_CONTROLLER);
+
         return view;
     }
 
@@ -87,13 +80,52 @@ public class NewsFragment extends Fragment {
                 Bitmap bitmap = BitmapFactory.decodeByteArray
                         (news.getNews_pic(), 0, news.getNews_pic().length);
                 holder.ivPicture.setImageBitmap(bitmap);
-                holder.ivPicture.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Toast.makeText(getContext(), news.getTitle() + "clicked", Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
+            holder.cvNews.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final Dialog myDialog = new Dialog(getContext());
+                    myDialog.setTitle(news.getNews_type().equals("INN")? "站內消息": "攝影新聞");
+                    myDialog.setContentView(R.layout.dialog_showproduct);
+
+                    // 透過myDialog.getWindow()取得這個對話視窗的Window物件
+                    Window dialogWindow = myDialog.getWindow();
+                    dialogWindow.setGravity(Gravity.CENTER);
+
+                    WindowManager wm = getActivity().getWindowManager();
+                    Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
+                    WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
+                    lp.height = (int) (d.getHeight() * 0.8);
+                    lp.width = (int) (d.getWidth() * 0.8);
+                    dialogWindow.setAttributes(lp);
+
+                    TextView newsTitle = myDialog.findViewById(R.id.tvShowProductTitle);
+                    newsTitle.setText(news.getTitle());
+                    newsTitle.setTextSize(20);
+                    TextView newsDate = myDialog.findViewById(R.id.tvShowProductPrice);
+                    newsDate.setText(news.getNews_date().toString());
+                    TextView newsContent = myDialog.findViewById(R.id.tvShowProductContent);
+                    newsContent.setText(news.getArticle());
+                    ImageView newsPicture = myDialog.findViewById(R.id.ivShowProduct);
+                    newsPicture.setImageResource(R.drawable.p08);
+                    if (news.getNews_pic() != null) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray
+                                (news.getNews_pic(), 0, news.getNews_pic().length);
+                        newsPicture.setImageBitmap(bitmap);
+                    }
+
+                    Button btn = myDialog.findViewById(R.id.btnBuyProduct);
+                    btn.setText("返回");
+                    btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            myDialog.cancel();
+                        }
+                    });
+
+                    myDialog.show();
+                }
+            });
         }
 
         @Override
@@ -104,13 +136,52 @@ public class NewsFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder {
             TextView tvTitle, tvDate;
             ImageView ivPicture;
+            CardView cvNews;
 
             public ViewHolder(View view) {
                 super(view);
                 tvTitle = view.findViewById(R.id.tvNewsTitle);
                 tvDate = view.findViewById(R.id.tvNewsDate);
                 ivPicture = view.findViewById(R.id.ivNewsPicture);
+                cvNews = view.findViewById(R.id.cvNews);
             }
+        }
+    }
+
+    private class NewsDownloadTask extends AsyncTask<String, Void, List<NewsVO>>{
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(getContext());
+            dialog.setMessage("Loading...");
+            dialog.show();
+        }
+
+        @Override
+        protected List<NewsVO> doInBackground(String... strings) {
+            String url = strings[0];
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("action", "news_all_download");
+            List<NewsVO> newsList = null;
+            try {
+                String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
+                Type type = new TypeToken<List<NewsVO>>() {
+                }.getType();
+                newsList = Utils.gson.fromJson(jsonIn, type);
+                for(NewsVO news : newsList){
+                    byte[] pic = Base64.decode(news.getPicBase64(), Base64.DEFAULT);
+                    news.setPicBase64(null);
+                    news.setNews_pic(pic);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return newsList;
+        }
+
+        @Override
+        protected void onPostExecute(List<NewsVO> newsList) {
+            rvNews.setAdapter(new NewsAdapter(newsList));
+            dialog.cancel();
         }
     }
 }

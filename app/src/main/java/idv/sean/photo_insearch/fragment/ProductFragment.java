@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -20,20 +21,16 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import idv.sean.photo_insearch.R;
 import idv.sean.photo_insearch.model.ProductVO;
-import idv.sean.photo_insearch.util.TextTransferTask;
 import idv.sean.photo_insearch.util.Utils;
 
 
@@ -52,8 +49,6 @@ public class ProductFragment extends Fragment {
         rvProduct.setLayoutManager(layoutManager);
         new ProductsDownloadTask().execute(Utils.URL_ANDOROID_CONTROLLER);
 
-        RecyclerView rv = view.findViewById(R.id.recyclerView_photo);
-        rv.setBackgroundColor(getResources().getColor(R.color.productBackground));
         return view;
     }
 
@@ -78,14 +73,14 @@ public class ProductFragment extends Fragment {
                     .decodeByteArray(product.getProd_pic(), 0, product.getProd_pic().length);
             holder.ivPicture.setImageBitmap(bitmap);
             holder.tvName.setText(product.getProd_name());
-            holder.tvPrice.setText(String.valueOf(product.getProd_price()));
+            holder.tvPrice.setText("NTD: " + String.valueOf(product.getProd_price()));
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    Toast.makeText(getContext(), product.getProd_name() + "clicked", Toast.LENGTH_SHORT).show();
+                    //show product detail by dialog
                     Dialog myDialog = new Dialog(getContext());
                     myDialog.setTitle("商品詳情");
-                    myDialog.setContentView(R.layout.activity_showproduct);
+                    myDialog.setContentView(R.layout.dialog_showproduct);
                     // 透過myDialog.getWindow()取得這個對話視窗的Window物件
                     Window dialogWindow = myDialog.getWindow();
                     dialogWindow.setGravity(Gravity.CENTER);
@@ -93,14 +88,14 @@ public class ProductFragment extends Fragment {
                     WindowManager wm = getActivity().getWindowManager();
                     Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
                     WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
-                    lp.height = (int) (d.getHeight() * 0.7);
-                    lp.width = (int)(d.getWidth() * 0.85);
+                    lp.height = (int) (d.getHeight() * 0.6);
+                    lp.width = (int) (d.getWidth() * 0.8);
                     dialogWindow.setAttributes(lp);
 
                     TextView prodName = myDialog.findViewById(R.id.tvShowProductTitle);
                     prodName.setText(product.getProd_name());
                     TextView prodPrice = myDialog.findViewById(R.id.tvShowProductPrice);
-                    prodPrice.setText(String.valueOf(product.getProd_price()));
+                    prodPrice.setText("NTD: " + String.valueOf(product.getProd_price()));
                     TextView prodContent = myDialog.findViewById(R.id.tvShowProductContent);
                     prodContent.setText(product.getProd_detil());
                     ImageView ivProd = myDialog.findViewById(R.id.ivShowProduct);
@@ -130,7 +125,7 @@ public class ProductFragment extends Fragment {
         }
     }
 
-    private class ProductsDownloadTask extends AsyncTask<Object, Void, List<ProductVO>>{
+    private class ProductsDownloadTask extends AsyncTask<Object, Void, List<ProductVO>> {
         @Override
         protected void onPreExecute() {
             progressDialog = new ProgressDialog(getContext());
@@ -146,8 +141,14 @@ public class ProductFragment extends Fragment {
             List<ProductVO> productsList = null;
             try {
                 String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
-                Type type = new TypeToken<List<ProductVO>>() {}.getType();
-                 productsList = Utils.gson.fromJson(jsonIn, type);
+                Type type = new TypeToken<List<ProductVO>>() {
+                }.getType();
+                productsList = Utils.gson.fromJson(jsonIn, type);
+                for(ProductVO product: productsList){
+                    byte[] pic = Base64.decode(product.getPicBase64(),Base64.DEFAULT);
+                    product.setPicBase64(null);
+                    product.setProd_pic(pic);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

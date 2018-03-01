@@ -44,9 +44,9 @@ public class MemberDetailFragment extends Fragment {
         memberDetail.add(new String[]{"生日:", memVO.getMem_bd().toString()});
         memberDetail.add(new String[]{"MAIL:", memVO.getMem_mail()});
         memberDetail.add(new String[]{"電話:", memVO.getMem_phone()});
-        memberDetail.add(new String[]{"會員等級:", memVO.getMem_level()});
+        memberDetail.add(new String[]{"會員等級:", memVO.getMem_level().equals("1")? "一般會員" : "攝影師"});
         memberDetail.add(new String[]{"加入日期:", memVO.getMem_jointime().toString()});
-        memberDetail.add(new String[]{"同意搜尋:", memVO.getMem_agree()});
+        memberDetail.add(new String[]{"同意搜尋:", memVO.getMem_agree().equals("1")? "是" : "否"});
         memberDetail.add(new String[]{"地址:", memVO.getMem_addr()});
 
         View view = inflater.inflate(R.layout.fragment_member, container, false);

@@ -19,6 +19,30 @@ public class CasesVO implements Serializable {
     private Double score2;
     private String emp_id;
     private Date case_create_date;
+    private String case_photo_pic;
+
+    public CasesVO() {
+    }
+
+    public CasesVO(String case_id, String mem_id, String mem_id2, String case_type,
+                   String case_title, String case_content, String case_state,
+                   String comment1, Double score1, String comment2, Double score2,
+                   String emp_id, Date case_create_date, String case_photo_pic) {
+        this.case_id = case_id;
+        this.mem_id = mem_id;
+        this.mem_id2 = mem_id2;
+        this.case_type = case_type;
+        this.case_title = case_title;
+        this.case_content = case_content;
+        this.case_state = case_state;
+        this.comment1 = comment1;
+        this.score1 = score1;
+        this.comment2 = comment2;
+        this.score2 = score2;
+        this.emp_id = emp_id;
+        this.case_create_date = case_create_date;
+        this.case_photo_pic = case_photo_pic;
+    }
 
     public String getCase_id() {
         return case_id;
@@ -124,5 +148,12 @@ public class CasesVO implements Serializable {
         this.case_create_date = case_create_date;
     }
 
+    public String getCase_photo_pic() {
+        return case_photo_pic;
+    }
+
+    public void setCase_photo_pic(String case_photo_pic) {
+        this.case_photo_pic = case_photo_pic;
+    }
 }
 

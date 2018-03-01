@@ -49,6 +49,34 @@ public class Utils {
     private static List<String> userIdsList = new ArrayList<>();
     private static MemVO memVO;
 
+    public static Map<String, String> photoType = new HashMap<String, String>(){
+        {
+            put("風景", "01");
+            put("人像", "02");
+            put("紀實", "03");
+            put("商品", "04");
+            put("生態", "05");
+            put("概念", "06");
+            put("藝術", "07");
+            put("新聞", "08");
+            put("婚紗", "09");
+            put("時裝", "10");
+            put("美食", "11");
+            put("飛機", "12");
+            put("鐵道", "13");
+            put("建築", "14");
+            put("廢墟", "15");
+            put("黑白", "16");
+            put("微距", "17");
+            put("家庭", "18");
+            put("天文", "19");
+            put("空中", "20");
+            put("水中", "21");
+            put("動物", "22");
+            put("其他", "23");
+        }
+    };
+
     public static byte[] bitmapToPNG(Bitmap srcBitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         // 轉成PNG不會失真，所以quality參數值會被忽略
