@@ -1,10 +1,15 @@
 package idv.sean.photo_insearch.util;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
@@ -112,19 +117,48 @@ public class ChatWebSocketClient extends WebSocketClient {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notification = null;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){     //判斷手機安卓版本(如果大於8.0)
 
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
-                .setContentTitle("message from " + Utils.getUserNamesMap().get(chatMessage.getSender()))
-                .setSmallIcon(android.R.drawable.ic_menu_info_details)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setSound(soundUri)
-                .setDefaults(NotificationCompat.DEFAULT_VIBRATE);
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(context);
-        notificationManager.notify(0, notification.build());
+            NotificationChannel channel = new NotificationChannel
+                    ("chat", "chat", NotificationManager.IMPORTANCE_HIGH);
+            channel.setLightColor(Color.RED);
+            channel.setDescription("TestDescription");  //訊息內容
+            channel.enableVibration(true);  //設置震動模式
+            long[] frequency = {100,300,100,300,100,500,100,500};
+            channel.setVibrationPattern(frequency);  //震動頻率
+            channel.enableLights(true);  //設置閃爍指示燈
+            channel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);  //螢幕鎖住時顯示方式
+            channel.setBypassDnd(true);  //覆蓋用戶勿擾設定
 
+
+            notification = new NotificationCompat.Builder(context, "chat");
+            notification
+                    .setContentTitle("message from " + Utils.getUserNamesMap().get(chatMessage.getSender()))
+                    .setSmallIcon(android.R.drawable.ic_menu_info_details)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setSound(soundUri)
+                    .setChannelId("chat")
+                    .setDefaults(NotificationCompat.DEFAULT_VIBRATE);
+
+            NotificationManager manager =
+                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(channel);
+            manager.notify("chat", 0 , notification.build());
+        }else {                                                 //android 8.0以下 使用舊版
+            notification = new NotificationCompat.Builder(context)
+                    .setContentTitle("message from " + Utils.getUserNamesMap().get(chatMessage.getSender()))
+                    .setSmallIcon(android.R.drawable.ic_menu_info_details)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setSound(soundUri)
+                    .setDefaults(NotificationCompat.DEFAULT_VIBRATE);
+            NotificationManagerCompat notificationManager =
+                    NotificationManagerCompat.from(context);
+            notificationManager.notify(0, notification.build());
+        }
     }
-
 }

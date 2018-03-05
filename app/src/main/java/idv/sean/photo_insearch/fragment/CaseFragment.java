@@ -2,23 +2,17 @@ package idv.sean.photo_insearch.fragment;
 
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -28,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import idv.sean.photo_insearch.R;
-import idv.sean.photo_insearch.activity.ShowCaseActivity;
+import idv.sean.photo_insearch.activity.ShowCaseDetailActivity;
 import idv.sean.photo_insearch.model.MemVO;
 import idv.sean.photo_insearch.util.TextTransferTask;
 import idv.sean.photo_insearch.util.Utils;
@@ -66,6 +60,7 @@ public class CaseFragment extends Fragment {
         Type typeMem = new TypeToken<List<MemVO>>() {
         }.getType();
         memList = Utils.gson.fromJson(jsonMem, typeMem);
+        Utils.setMemList(memList);
     }
 
     @Nullable
@@ -75,7 +70,8 @@ public class CaseFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_photo, container, false);
         rvCase = view.findViewById(R.id.recyclerView_photo);
         rvCase.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        RecyclerView.LayoutManager layoutManager =
+                new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         rvCase.setLayoutManager(layoutManager);
         rvCase.setAdapter(new CasesAdapter(casesList));
 
@@ -117,15 +113,13 @@ public class CaseFragment extends Fragment {
             String idName = "p" + casePhoto;
             int resId = getResources().getIdentifier
                     (idName, "drawable", getContext().getPackageName());
-
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId);
-
-
-            holder.ivCasePicture.setImageBitmap(bitmap);
-            holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+//            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId);
+//            holder.ivCasePicture.setImageBitmap(bitmap);
+            holder.ivCasePicture.setImageResource(resId);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(getContext(), ShowCaseActivity.class);
+                    Intent intent = new Intent(getContext(), ShowCaseDetailActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("caseVO", caseVO);
                     bundle.putSerializable("mem1", mem1);
@@ -143,7 +137,6 @@ public class CaseFragment extends Fragment {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             private TextView tvTitle, tvDate, tvBuilder;
-            private LinearLayout linearLayout;
             private ImageView ivCasePicture;
 
             public ViewHolder(View view) {
@@ -152,7 +145,7 @@ public class CaseFragment extends Fragment {
                 tvDate = view.findViewById(R.id.tvCaseDate);
                 tvBuilder = view.findViewById(R.id.tvCaseBuilder);
                 ivCasePicture = view.findViewById(R.id.ivCasePicture);
-                linearLayout = view.findViewById(R.id.linearlayout_case);
+
             }
         }
     }

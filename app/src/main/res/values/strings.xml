@@ -10,4 +10,10 @@
         我們想透過這個平台讓攝影者與圖片使用者有更友善的交易環境。
         您可透過我們的網站購買專業圖片、上傳您的專業作品為自己賺取費用、購買所需要的攝影器材、
         及透過發案及接案合作專區，找到您符合需求的攝影師及找到您想進行接案的案件。</string>
+    <string name="casePosted">發佈中案件</string>
+    <string name="caseProceeding">進行中案件</string>
+    <string name="caseFinished">已完成案件</string>
+    <string name="caseInvited">案件邀請</string>
+    <string name="caseClosed">未成案案件</string>
+
 </resources>

@@ -1,19 +1,27 @@
 package idv.sean.photo_insearch.activity;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +35,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import idv.sean.photo_insearch.R;
+import idv.sean.photo_insearch.fragment.NoDataFragment;
+import idv.sean.photo_insearch.model.MemVO;
 import idv.sean.photo_insearch.model.ProductVO;
 import idv.sean.photo_insearch.util.TextTransferTask;
 import idv.sean.photo_insearch.util.Utils;
@@ -72,10 +82,53 @@ public class ShowPhotoActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(PhotoAdapter.ViewHolder holder, int position) {
             final PhotoVO photo = photoList.get(position);
-            Bitmap bitmap = BitmapFactory.decodeByteArray
+            final Bitmap bitmap = BitmapFactory.decodeByteArray
                     (photo.getPhoto_pic(), 0, photo.getPhoto_pic().length);
             holder.ivPhoto.setImageBitmap(bitmap);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final Dialog myDialog = new Dialog(ShowPhotoActivity.this);
+                    myDialog.setTitle(photo.getPhoto_name());
+                    myDialog.setContentView(R.layout.dialog_showphoto);
+                    // 透過myDialog.getWindow()取得這個對話視窗的Window物件
+                    Window dialogWindow = myDialog.getWindow();
+                    dialogWindow.setGravity(Gravity.CENTER);
 
+                    WindowManager wm = getWindowManager();
+                    Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
+                    WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
+                    lp.height = (int) (d.getHeight() * 0.8);
+                    lp.width = (int) (d.getWidth() * 0.8);
+                    dialogWindow.setAttributes(lp);
+
+                    ImageView ivPhoto = myDialog.findViewById(R.id.ivPhotoDetail);
+                    ivPhoto.setImageBitmap(bitmap);
+                    TextView tvName = myDialog.findViewById(R.id.tvPhotoName);
+                    tvName.setText(photo.getPhoto_name());
+                    TextView tvOwner = myDialog.findViewById(R.id.tvPhotoOwnerName);
+                    List<MemVO> memList = Utils.getMemList();
+                    for(MemVO mem : memList){
+                        if(photo.getMem_id().equals(mem.getMem_id()))
+                            tvOwner.setText(mem.getMem_name());
+                    }
+
+                    TextView tvDate = myDialog.findViewById(R.id.tvPhotoDate);
+                    tvDate.setText(photo.getPhoto_date().toString());
+                    TextView tvContent = myDialog.findViewById(R.id.tvPhotoContent);
+                    tvContent.setText(photo.getPhoto_des());
+                    Button btnBuy = myDialog.findViewById(R.id.btnPhotoBuy);
+                    Button btnCancel = myDialog.findViewById(R.id.btnPhotoCancel);
+                    btnCancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            myDialog.cancel();
+                        }
+                    });
+
+                    myDialog.show();
+                }
+            });
         }
 
         @Override
@@ -129,6 +182,11 @@ public class ShowPhotoActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<PhotoVO> photoList) {
+            if(photoList.isEmpty()){
+                Fragment noDataFragment = new NoDataFragment();
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(R.id.clShowPhoto, noDataFragment).commit();
+            }
             rvPhotos.setAdapter(new PhotoAdapter(photoList));
             dialog.cancel();
         }

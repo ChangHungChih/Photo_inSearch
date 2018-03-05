@@ -28,12 +28,26 @@ import java.util.Map;
 import idv.sean.photo_insearch.model.MemVO;
 
 public class Utils {
-    public final static int TEST_UPLOAD = 0;
+    public final static String TAG = "Utils";
+    public final static String TAG_GET_REMOTE_DATA = "GetRemoteData";
     public final static int LOGIN = 1;
     public final static int CASES_ALL_DOWNLOAD = 2;
     public final static int SEND_MAIL = 3;
-    public final static int NEWS_ALL_DOWNLOAD = 4;
-    //    public final static String URL_ANDOROID_CONTROLLER =
+    public final static int REFRESH_MEMBER_DATA = 4;
+    public final static int INSERT_POINT = 5;
+    public static final int GET_POSTED_CASES = 6;
+    public static final int GET_PROCEEDING_CASES = 7;
+    public static final int GET_FINISHED_CASES = 8;
+    public static final int GET_INVITED_CASES = 9;
+    public static final int GET_CLOSED_CASES = 10;
+    public static final int CANCEL_CASE = 11;
+    public static final int FINISH_CASE = 12;
+    public static final int ACCEPT_CASE = 13;
+    public static final int REJECT_CASE = 14;
+    public static final int GET_APPLICANTS = 15;
+    public static final int CHOOSE_MEMBER_TO_CASE = 16;
+
+//    public final static String URL_ANDOROID_CONTROLLER =
 //            "http://10.0.2.2:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
     public final static String URL_ANDOROID_CONTROLLER =
             "http://10.120.26.10:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
@@ -41,15 +55,14 @@ public class Utils {
     public final static String WEBSOCKET_URI =
             "ws://10.120.26.10:8081/PhotoinSearch_DBPractic/AndroidChatWS/";
 
-    public final static String TAG = "Utils";
-    public final static String TAG_GET_REMOTE_DATA = "GetRemoteData";
     public static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
     public static ChatWebSocketClient chatWebSocketClient;
     private static Map<String, String> userNamesMap = new HashMap<>();
     private static List<String> userIdsList = new ArrayList<>();
+    private static List<MemVO> memList;
     private static MemVO memVO;
 
-    public static Map<String, String> photoType = new HashMap<String, String>(){
+    public static Map<String, String> photoType = new HashMap<String, String>() {
         {
             put("風景", "01");
             put("人像", "02");
@@ -206,5 +219,13 @@ public class Utils {
 
     public static MemVO getMemVO() {
         return memVO;
+    }
+
+    public static List<MemVO> getMemList() {
+        return memList;
+    }
+
+    public static void setMemList(List<MemVO> memList) {
+        Utils.memList = memList;
     }
 }

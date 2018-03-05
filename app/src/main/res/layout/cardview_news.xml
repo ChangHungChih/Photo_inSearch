@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
             android:layout_below="@id/llayoutNews"
-            android:src="@drawable/p15"
+            android:src="@drawable/p08"
             />
 
 

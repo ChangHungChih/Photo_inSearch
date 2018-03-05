@@ -1,6 +1,5 @@
 package idv.sean.photo_insearch.activity;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,6 +23,7 @@ public class LoginDialogActivity extends AppCompatActivity {
     private Button btnLogin, btnCancel;
     private TextView tvMessage;
     private MemVO memVO = null;
+    private int point = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +71,7 @@ public class LoginDialogActivity extends AppCompatActivity {
                     pref.edit()
                             .putBoolean("login", true)
                             .putString("memVO", memJson)
+                            .putInt("point", point)
                             .apply();
                     setResult(RESULT_OK);
                     finish();
@@ -110,11 +111,12 @@ public class LoginDialogActivity extends AppCompatActivity {
             jsonIn = (JsonObject) textTransferTask
                     .execute(Utils.LOGIN, Utils.URL_ANDOROID_CONTROLLER, name, pwd).get();
 
+            memVO = Utils.gson.fromJson(jsonIn.get("memVO").getAsString(), MemVO.class);
+            point = jsonIn.get("point").getAsInt();
+
             if (jsonIn == null) {
                 return false;
             }
-
-            memVO = Utils.gson.fromJson(jsonIn.toString(), MemVO.class);
 
         } catch (InterruptedException e) {
             e.printStackTrace();

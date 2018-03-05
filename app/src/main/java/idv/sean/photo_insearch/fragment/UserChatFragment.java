@@ -41,14 +41,14 @@ public class UserChatFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         MainActivity activity = (MainActivity) getActivity();
-        View view = inflater.inflate(R.layout.fragment_member, container, false);
+        View view = inflater.inflate(R.layout.recyclerview_only, container, false);
 
         // 初始化LocalBroadcastManager並註冊BroadcastReceiver
         broadcastManager = LocalBroadcastManager.getInstance(getActivity());
         registerUserStateReceiver();
 
         // 初始化聊天清單
-        rvUsers = view.findViewById(R.id.recyclerView_member);
+        rvUsers = view.findViewById(R.id.onlyRecyclerView);
         rvUsers.setLayoutManager(new LinearLayoutManager(activity));
         rvUsers.setAdapter(new UserAdapter(activity));
 
