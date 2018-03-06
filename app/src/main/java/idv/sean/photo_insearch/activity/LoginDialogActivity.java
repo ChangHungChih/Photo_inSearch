@@ -42,7 +42,6 @@ public class LoginDialogActivity extends AppCompatActivity {
     }
 
     public void initButton() {
-
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,7 +49,6 @@ public class LoginDialogActivity extends AppCompatActivity {
                 finish();
             }
         });
-
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,20 +80,16 @@ public class LoginDialogActivity extends AppCompatActivity {
         });
     }
 
-    //設登入過的帳密回輸入方塊 set logged account and password back
+    //設登入過的帳密回輸入方塊 set logged account back
     @Override
     protected void onStart() {
         super.onStart();
-
         SharedPreferences pref = getSharedPreferences("preference", MODE_PRIVATE);
         String memJson = pref.getString("memVO", "");
-
         if (memJson.length() > 0) {
             memVO = Utils.gson.fromJson(memJson, MemVO.class);
             String acc = memVO.getMem_acc();
-            String pwd = memVO.getMem_pwd();
             etAccount.setText(acc);
-            etPassword.setText(pwd);
         }
     }
 
@@ -106,24 +100,23 @@ public class LoginDialogActivity extends AppCompatActivity {
     private boolean isUserValid(String name, String pwd) {
         // 連線至server端檢查帳號密碼是否正確
         TextTransferTask textTransferTask = new TextTransferTask();
-        JsonObject jsonIn;
         try {
-            jsonIn = (JsonObject) textTransferTask
+            String jsonIn = (String) textTransferTask
                     .execute(Utils.LOGIN, Utils.URL_ANDOROID_CONTROLLER, name, pwd).get();
-
-            memVO = Utils.gson.fromJson(jsonIn.get("memVO").getAsString(), MemVO.class);
-            point = jsonIn.get("point").getAsInt();
-
-            if (jsonIn == null) {
+            if (jsonIn == null || jsonIn.isEmpty()) {
                 return false;
             }
+            //return to JsonObject from jsonString
+            JsonObject jsonObject = Utils.gson.fromJson(jsonIn, JsonObject.class);
+            //set memVO and point data
+            memVO = Utils.gson.fromJson(jsonObject.get("memVO").getAsString(), MemVO.class);
+            point = jsonObject.get("point").getAsInt();
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
         return (memVO != null);
     }
 }

@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
@@ -55,19 +56,24 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
     private RatingBar rbBuilder, rbApplicant;
     private CasesVO caseVO;
     private MemVO memBuilder, memApplicant, userData;
-    private int caseType;
+    private int caseState;
     private boolean idCheck = false;
     private String selectedMemId;
+    private double ratePoint;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_showcasedetail);
 
-        caseType = getIntent().getExtras().getInt("caseType");
+        caseState = getIntent().getExtras().getInt("caseState");
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        caseVO = (CasesVO) bundle.getSerializable("caseVO");
+        memBuilder = (MemVO) bundle.getSerializable("mem1");
+        memApplicant = (MemVO) bundle.getSerializable("mem2");
         findViews();
         setInfo();
-        initBtn();
     }
 
     public void findViews() {
@@ -82,11 +88,6 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
     }
 
     public void setInfo() {
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        caseVO = (CasesVO) bundle.getSerializable("caseVO");
-        memBuilder = (MemVO) bundle.getSerializable("mem1");
-        memApplicant = (MemVO) bundle.getSerializable("mem2");
         tvTitle.setText(caseVO.getCase_title());
         tvBuilder.setText("發案者: " + memBuilder.getMem_name());
         if (memApplicant != null) {
@@ -101,11 +102,12 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
         String idName = "p" + casePhoto;
         int resId = getResources().getIdentifier(idName, "drawable", this.getPackageName());
         ivPicture.setImageResource(resId);
+        initBtn();
     }
 
     public void initBtn() {
         userData = Utils.getMemVO();
-        switch (caseType) {
+        switch (caseState) {
             case MyCaseTypeFragment.POSTED_CASES:
                 btnPostedCases();
                 break;
@@ -139,70 +141,102 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
-        if ("CT1".equals(caseVO.getCase_type())) {  //caseType = CT1 (public)
-            try {
-                String jsonApplicants = (String) (new TextTransferTask()
-                        .execute(Utils.GET_APPLICANTS, Utils.URL_ANDOROID_CONTROLLER,
-                                caseVO.getCase_id()).get());
-                Type type = new TypeToken<List<Catch_listVO>>() {
-                }.getType();
-                final List<Catch_listVO> catchList = Utils.gson.fromJson(jsonApplicants, type);
-                spinner.setVisibility(View.VISIBLE);
-                String[] applicants = new String[catchList.size() + 1];
-                applicants[0] = "請選擇";
-                final List<MemVO> memList = Utils.getMemList();
-                for (int i = 0; i < applicants.length - 1; i++) {
-                    String memId = catchList.get(i).getMem_id2();
-                    for (MemVO mem : memList) {
-                        if (memId.equals(mem.getMem_id())) {
-                            applicants[i + 1] = mem.getMem_name();
-                        }
-                    }
-                }
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                        (this, android.R.layout.simple_spinner_item, applicants);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner.setAdapter(adapter);
-                // 在執行setOnItemSelectedListener()之前先呼叫setSelection(position, animate)
-                // 可避免一開始就執行OnItemSelectedListener.onItemSelected()
-                spinner.setSelection(0, true);
-                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
-                        String selectedId = catchList.get(position - 1).getMem_id2();
+        if ("CT1".equals(caseVO.getCase_type())) {  //caseState = CT1 (public)
+            if (userData == null) {                                 //訪客身分  no member
+                btnSubmit.setVisibility(View.INVISIBLE);
+            } else if (userData.getMem_id().equals(caseVO.getMem_id())) {  //發案者身分 is case Builder
+                try {
+                    String jsonApplicants = (String) (new TextTransferTask()
+                            .execute(Utils.GET_APPLICANTS, Utils.URL_ANDOROID_CONTROLLER,
+                                    caseVO.getCase_id()).get());
+                    Type type = new TypeToken<List<Catch_listVO>>() {
+                    }.getType();
+                    final List<Catch_listVO> catchList = Utils.gson.fromJson(jsonApplicants, type);
+                    spinner.setVisibility(View.VISIBLE);
+                    String[] applicants = new String[catchList.size() + 1];
+                    applicants[0] = "請選擇";
+                    final List<MemVO> memList = Utils.getMemList();
+                    for (int i = 0; i < applicants.length - 1; i++) {
+                        String memId = catchList.get(i).getMem_id2();
                         for (MemVO mem : memList) {
-                            if (selectedId.equals(mem.getMem_id())) {
-                                selectedMemId = mem.getMem_id();
+                            if (memId.equals(mem.getMem_id())) {
+                                applicants[i + 1] = mem.getMem_name();
                             }
                         }
                     }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {}
-                });
+                    //set applicants spinner
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                            (this, android.R.layout.simple_spinner_item, applicants);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinner.setAdapter(adapter);
+                    // 在執行setOnItemSelectedListener()之前先呼叫setSelection(position, animate)
+                    // 可避免一開始就執行OnItemSelectedListener.onItemSelected()
+                    spinner.setSelection(0, true);
+                    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                            String selectedId = catchList.get(position - 1).getMem_id2();
+                            for (MemVO mem : memList) {
+                                if (selectedId.equals(mem.getMem_id())) {
+                                    selectedMemId = mem.getMem_id();
+                                }
+                            }
+                        }
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {}
+                    });
 
-                btnSubmit.setText("確定成案");
+                    btnSubmit.setText("確定成案");
+                    btnSubmit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (selectedMemId != null) {
+                                new TextTransferTask().execute
+                                        (Utils.CHOOSE_MEMBER_TO_CASE, Utils.URL_ANDOROID_CONTROLLER,
+                                                caseVO.getCase_id(), selectedMemId);
+                                finish();
+                            } else {
+                                Toast.makeText(ShowCaseDetailActivity.this,
+                                        "請選擇攝影師", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+            } else if (userData.getMem_level().equals("2")) {   //非發案者，但為攝影師身分  member level2
+                btnSubmit.setText("申請接案");
                 btnSubmit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (selectedMemId != null) {
-                            new TextTransferTask().execute
-                                    (Utils.CHOOSE_MEMBER_TO_CASE, Utils.URL_ANDOROID_CONTROLLER,
-                                            caseVO.getCase_id(), selectedMemId);
-                            finish();
-                        } else {
-                            Toast.makeText(ShowCaseDetailActivity.this,
-                                    "請選擇攝影師", Toast.LENGTH_SHORT).show();
+                        try {
+                            String jsonIn = (String) new TextTransferTask().execute
+                                    (Utils.APPLY_CASE, Utils.URL_ANDOROID_CONTROLLER,
+                                            caseVO.getCase_id(), caseVO.getMem_id(),
+                                            userData.getMem_id()).get();
+                            if (jsonIn.isEmpty()) {
+                                Toast.makeText(ShowCaseDetailActivity.this,
+                                        "已經申請接案", Toast.LENGTH_SHORT).show();
+                                btnSubmit.setVisibility(View.INVISIBLE);
+                            } else {
+                                Toast.makeText(ShowCaseDetailActivity.this,
+                                        "已經申請接案", Toast.LENGTH_SHORT).show();
+                                btnSubmit.setVisibility(View.INVISIBLE);
+                                finish();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
                         }
                     }
                 });
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
+            } else {                                          //非發案者，一般會員  member level1
+                btnSubmit.setVisibility(View.INVISIBLE);
             }
-        } else {                                    //caseType = CT2 (private)
+        } else {                                             //caseState = CT2 (private)
             btnSubmit.setVisibility(View.INVISIBLE);
         }
     }
@@ -268,7 +302,7 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
         }
     }
 
-    public void btnFinishedCases(){
+    public void btnFinishedCases() {
         tvTitle.setText(caseVO.getCase_title() + "(結案)");
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -282,15 +316,48 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
         rbApplicant = findViewById(R.id.ratingBarApplicant);
         tvCommentBuilder = findViewById(R.id.tvCommentBuilder);
         tvCommentApplicant = findViewById(R.id.tvCommentApplicant);
-        if(caseVO.getComment1() != null){
+        if (caseVO.getComment1() != null || caseVO.getScore1() > 0) {
+            //set comment button invisible
+            if (userData.getMem_id().equals(memBuilder.getMem_id())) {
+                btnSubmit.setVisibility(View.INVISIBLE);
+            }
+            rbBuilder.setVisibility(View.VISIBLE);
             rbBuilder.setRating(caseVO.getScore1().floatValue());
             tvCommentBuilder.setText(caseVO.getComment1());
-        }else if(userData.getMem_id().equals(memBuilder.getMem_id())){
-            
+        } else {//enable comment button
+            if (userData.getMem_id().equals(memBuilder.getMem_id())) {
+                btnSubmit.setText("評價");
+                btnSubmit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showCommentDialog();
+                    }
+                });
+            }
+            tvCommentBuilder.setText("尚未評價");
+            rbBuilder.setVisibility(View.GONE);
         }
-        if(caseVO.getComment2() != null){
+
+        if (caseVO.getComment2() != null || caseVO.getScore2() != 0) {
+            //set comment button invisible
+            if (userData.getMem_id().equals(memApplicant.getMem_id())) {
+                btnSubmit.setVisibility(View.INVISIBLE);
+            }
+            rbApplicant.setVisibility(View.VISIBLE);
             rbApplicant.setRating(caseVO.getScore2().floatValue());
             tvCommentApplicant.setText(caseVO.getComment2());
+        } else {//enable comment button
+            if (userData.getMem_id().equals(memApplicant.getMem_id())) {
+                btnSubmit.setText("評價");
+                btnSubmit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showCommentDialog();
+                    }
+                });
+            }
+            tvCommentApplicant.setText("尚未評價");
+            rbApplicant.setVisibility(View.GONE);
         }
     }
 
@@ -366,8 +433,8 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
         WindowManager wm = getWindowManager();
         Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
         WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
-        lp.height = (int) (d.getHeight() * 0.6);
-        lp.width = (int) (d.getWidth() * 0.6);
+        lp.height = (int) (d.getWidth() * 0.8);
+        lp.width = (int) (d.getWidth() * 0.8);
         dialogWindow.setAttributes(lp);
 
         TextView name = dialog.findViewById(R.id.tvShowProductTitle);
@@ -414,6 +481,69 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
                     }
                 });
         downloadDialog.show();
+    }
+
+    private void showCommentDialog() {
+        final Dialog myDialog = new Dialog(this);
+        myDialog.setTitle("評價");
+        myDialog.setContentView(R.layout.dialog_rate_and_comment);
+
+        // 透過myDialog.getWindow()取得這個對話視窗的Window物件
+        Window dialogWindow = myDialog.getWindow();
+        dialogWindow.setGravity(Gravity.CENTER);
+
+        WindowManager wm = getWindowManager();
+        Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
+        WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
+        lp.height = (int) (d.getWidth() * 0.9);
+        lp.width = (int) (d.getWidth() * 0.9);
+        dialogWindow.setAttributes(lp);
+
+        final TextView tvRating = myDialog.findViewById(R.id.tvRating);
+        final RatingBar rbRate = myDialog.findViewById(R.id.rbRate);
+        rbRate.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rate, boolean b) {
+                ratePoint = rate;
+                tvRating.setText(rate + "顆星");
+            }
+        });
+
+        final EditText etComment = myDialog.findViewById(R.id.etComment);
+        Button btnCancel = myDialog.findViewById(R.id.btnCommentCancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDialog.cancel();
+            }
+        });
+        Button btnSubmit = myDialog.findViewById(R.id.btnCommentSubmit);
+        final boolean mem1 = userData.getMem_id().equals(memBuilder.getMem_id());
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ratePoint == 0) {
+                    Toast.makeText(ShowCaseDetailActivity.this,
+                            "請給分數", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String commentContent = etComment.getText().toString().trim();
+                try {
+                    String jsonIn = (String) new TextTransferTask().execute(Utils.SET_COMMENT,
+                            Utils.URL_ANDOROID_CONTROLLER, caseVO.getCase_id(), ratePoint,
+                            commentContent, mem1).get();
+                    caseVO = Utils.gson.fromJson(jsonIn, CasesVO.class);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                myDialog.cancel();
+                setInfo();
+            }
+        });
+
+        myDialog.show();
     }
 
 }

@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteY="25dp">
 
     <EditText
         android:id="@+id/etAcc"
@@ -32,10 +33,10 @@
         android:id="@+id/btnLogInSubmit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
+        android:layout_marginBottom="39dp"
         android:text="登入"
-        app:layout_constraintStart_toStartOf="@+id/tvMsg"
-        app:layout_constraintTop_toBottomOf="@+id/etPwd" />
+        app:layout_constraintBottom_toTopOf="@+id/tvMsg"
+        app:layout_constraintStart_toStartOf="@+id/tvMsg" />
 
     <Button
         android:id="@+id/btnLogInCancel"
@@ -50,8 +51,19 @@
         android:id="@+id/tvMsg"
         android:layout_width="214dp"
         android:layout_height="40dp"
-        android:layout_marginTop="39dp"
+        android:layout_marginBottom="164dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogInCancel" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnMagic"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="magic"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@+id/tvMsg"
+        app:layout_constraintTop_toBottomOf="@+id/tvMsg" />
 </android.support.constraint.ConstraintLayout>

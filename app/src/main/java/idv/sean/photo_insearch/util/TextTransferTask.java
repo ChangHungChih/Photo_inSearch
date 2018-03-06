@@ -1,7 +1,6 @@
 package idv.sean.photo_insearch.util;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.google.gson.JsonObject;
 
@@ -31,11 +30,7 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
                 try {
                     //取得回傳Json字串  get Json String from web
                     String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
-                    //轉成JsonObject
-                    JsonObject loginResult = Utils.gson.fromJson(jsonIn, JsonObject.class);
-
-                    return loginResult;
-
+                    return jsonIn;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -103,7 +98,6 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
                 jsonObject.addProperty("memId", memId);
                 try {
                     String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
-                    Log.d(TAG, jsonIn);
                     return jsonIn;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -116,7 +110,6 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
                 jsonObject.addProperty("memId", memId);
                 try {
                     String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
-                    Log.d(TAG, jsonIn);
                     return jsonIn;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -129,7 +122,6 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
                 jsonObject.addProperty("memId", memId);
                 try {
                     String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
-                    Log.d(TAG, jsonIn);
                     return jsonIn;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -142,7 +134,6 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
                 jsonObject.addProperty("memId", memId);
                 try {
                     String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
-                    Log.d(TAG, jsonIn);
                     return jsonIn;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -155,7 +146,6 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
                 jsonObject.addProperty("memId", memId);
                 try {
                     String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
-                    Log.d(TAG, jsonIn);
                     return jsonIn;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -228,6 +218,40 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
                 jsonObject.addProperty("memId", chosenMemId);
                 try {
                     Utils.getRemoteData(url, jsonObject.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Utils.SET_COMMENT:
+                String commentCaseId = (String) objects[2];
+                double rate = (double) objects[3];
+                String comment = (String) objects[4];
+                boolean mem1 = (boolean) objects[5];
+                jsonObject.addProperty("action", "setComment");
+                jsonObject.addProperty("caseId", commentCaseId);
+                jsonObject.addProperty("rate", rate);
+                jsonObject.addProperty("comment", comment);
+                jsonObject.addProperty("boolean", mem1);
+                try {
+                    String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
+                    return jsonIn;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Utils.APPLY_CASE:
+                String applyCaseId = (String) objects[2];
+                String builderId = (String) objects[3];
+                String applicantId = (String) objects[4];
+                jsonObject.addProperty("action", "applyCase");
+                jsonObject.addProperty("caseId", applyCaseId);
+                jsonObject.addProperty("builderId", builderId);
+                jsonObject.addProperty("applicantId", applicantId);
+                try {
+                    String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
+                    return jsonIn;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

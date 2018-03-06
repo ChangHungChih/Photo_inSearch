@@ -130,18 +130,27 @@ public class MemberDetailFragment extends Fragment {
                 dialogWindow.setAttributes(lp);
 
                 final EditText cardNo, point;
-                Button submit, cancel;
+                Button submit, cancel, magic;
                 cardNo = dialog.findViewById(R.id.etAcc);
                 point = dialog.findViewById(R.id.etPwd);
                 submit = dialog.findViewById(R.id.btnLogInSubmit);
                 cancel = dialog.findViewById(R.id.btnLogInCancel);
+                magic = dialog.findViewById(R.id.btnMagic);
 
+                cardNo.setInputType(InputType.TYPE_CLASS_NUMBER);
+                point.setInputType(InputType.TYPE_CLASS_NUMBER);
                 cardNo.setHint("請輸入信用卡卡號");
                 point.setHint("請輸入要加值點數");
                 cancel.setText("返回");
                 submit.setText("加值");
 
-                point.setInputType(InputType.TYPE_CLASS_NUMBER);
+                magic.setVisibility(View.VISIBLE);
+                magic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        cardNo.setText("1234-5678-9876-5432");
+                    }
+                });
                 cancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -156,6 +165,7 @@ public class MemberDetailFragment extends Fragment {
                                 (Utils.INSERT_POINT, Utils.URL_ANDOROID_CONTROLLER, pointAdd);
                         cardNo.setText(null);
                         point.setText(null);
+                        dialog.cancel();
                         Toast.makeText(getContext(), "加值成功", Toast.LENGTH_SHORT).show();
                     }
                 });

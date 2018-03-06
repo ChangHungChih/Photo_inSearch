@@ -96,8 +96,8 @@ public class ProductFragment extends Fragment {
                     prodName.setText(product.getProd_name());
                     TextView prodPrice = myDialog.findViewById(R.id.tvShowProductPrice);
                     prodPrice.setText("NTD: " + String.valueOf(product.getProd_price()));
-//                    TextView prodContent = myDialog.findViewById(R.id.tvShowProductContent);
-//                    prodContent.setText(product.getProd_detil());
+                    TextView prodContent = myDialog.findViewById(R.id.tvShowProductContent);
+                    prodContent.setText(product.getProd_detil());
                     ImageView ivProd = myDialog.findViewById(R.id.ivShowProduct);
                     ivProd.setImageBitmap(bitmap);
 

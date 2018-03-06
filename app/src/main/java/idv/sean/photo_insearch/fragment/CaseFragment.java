@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,6 +125,7 @@ public class CaseFragment extends Fragment {
                     bundle.putSerializable("caseVO", caseVO);
                     bundle.putSerializable("mem1", mem1);
                     bundle.putSerializable("mem2", mem2);
+                    bundle.putInt("caseState", MyCaseTypeFragment.POSTED_CASES);
                     intent.putExtras(bundle);
                     getContext().startActivity(intent);
                 }

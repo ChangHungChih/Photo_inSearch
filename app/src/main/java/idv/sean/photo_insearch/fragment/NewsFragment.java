@@ -149,7 +149,7 @@ public class NewsFragment extends Fragment {
         protected void onPreExecute() {
             dialog = new ProgressDialog(getContext());
             dialog.setMessage("Loading...");
-//            dialog.show();
+            dialog.show();
         }
 
         @Override
@@ -179,7 +179,7 @@ public class NewsFragment extends Fragment {
         @Override
         protected void onPostExecute(List<NewsVO> newsList) {
             rvNews.setAdapter(new NewsAdapter(newsList));
-//            dialog.cancel();
+            dialog.cancel();
         }
     }
 }

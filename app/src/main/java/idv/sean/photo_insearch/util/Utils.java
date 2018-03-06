@@ -46,6 +46,8 @@ public class Utils {
     public static final int REJECT_CASE = 14;
     public static final int GET_APPLICANTS = 15;
     public static final int CHOOSE_MEMBER_TO_CASE = 16;
+    public static final int SET_COMMENT = 17;
+    public static final int APPLY_CASE = 18;
 
 //    public final static String URL_ANDOROID_CONTROLLER =
 //            "http://10.0.2.2:8081/PhotoinSearch_DBPractic/ForAndroidServlet";

@@ -33,7 +33,7 @@ public class ShowCaseActivity extends AppCompatActivity {
     private List<CasesVO> casesList;
     private List<MemVO> memList;
     private TextView tvCaseType;
-    private int caseType;
+    private int caseState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,9 +55,9 @@ public class ShowCaseActivity extends AppCompatActivity {
 
     public void initList() {
         //initialize casesList
-        caseType = getIntent().getIntExtra("case", 0);
+        caseState = getIntent().getIntExtra("case", 0);
         tvCaseType = findViewById(R.id.tvTitle_recyclerView_only);
-        switch (caseType) {
+        switch (caseState) {
             case MyCaseTypeFragment.POSTED_CASES:
                 getCases(Utils.GET_POSTED_CASES);
                 tvCaseType.setText(R.string.casePosted);
@@ -151,7 +151,7 @@ public class ShowCaseActivity extends AppCompatActivity {
                     bundle.putSerializable("caseVO", caseVO);
                     bundle.putSerializable("mem1", mem1);
                     bundle.putSerializable("mem2", mem2);
-                    bundle.putInt("caseType", caseType);
+                    bundle.putInt("caseState", caseState);
                     intent.putExtras(bundle);
                     startActivity(intent);
                 }

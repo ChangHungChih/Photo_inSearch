@@ -201,6 +201,13 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.mem:
+                if(login == false){
+                    drawerLayout.closeDrawer(GravityCompat.END);
+                    Intent loginIntent = new Intent
+                            (MainActivity.this, LoginDialogActivity.class);
+                    startActivityForResult(loginIntent, REQ_LOGIN);
+                    return false;
+                }
                 clearAllFragments();
                 myToolBar.setSubtitle("會員專區");
                 myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_MEM);
