@@ -112,7 +112,7 @@ public class NewsFragment extends Fragment {
                         newsPicture.setImageBitmap(bitmap);
                     }
 
-                    Button btn = myDialog.findViewById(R.id.btnBuyProduct);
+                    Button btn = myDialog.findViewById(R.id.btnCart);
                     btn.setText("返回");
                     btn.setOnClickListener(new View.OnClickListener() {
                         @Override

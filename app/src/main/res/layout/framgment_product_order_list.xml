@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    >
+
+    <TextView
+        android:id="@+id/tvFragmentOrderTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="商品訂單查詢"
+        android:layout_margin="6dp"
+        />
+
+    <TextView
+        android:id="@+id/tvProductOrder1"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvFragmentOrderTitle"
+        android:layout_marginTop="10dp"
+        android:textSize="12sp"
+        android:layout_marginStart="6dp"
+        android:gravity="center_horizontal"
+        android:text="訂單編號" />
+
+    <TextView
+        android:id="@+id/tvProductOrder2"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvProductOrder1"
+        android:layout_alignBottom="@+id/tvProductOrder1"
+        android:layout_marginEnd="6dp"
+        android:layout_toStartOf="@+id/tvProductOrder3"
+        android:gravity="center_horizontal"
+        android:text="訂單金額"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvProductOrder3"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvProductOrder2"
+        android:layout_alignBottom="@+id/tvProductOrder2"
+        android:layout_marginEnd="92dp"
+        android:layout_alignParentEnd="true"
+        android:gravity="center_horizontal"
+        android:text="訂購日期"
+        android:textSize="12sp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvProductOrderList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignStart="@+id/tvProductOrder1"
+        android:layout_below="@+id/tvProductOrder1"
+        android:layout_marginTop="6dp" />
+
+
+
+</RelativeLayout>

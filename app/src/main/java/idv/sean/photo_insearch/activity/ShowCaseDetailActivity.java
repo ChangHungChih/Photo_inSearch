@@ -445,7 +445,7 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
         content.setVisibility(View.INVISIBLE);
         ImageView ivProd = dialog.findViewById(R.id.ivShowProduct);
         ivProd.setImageBitmap(QRCode);
-        Button btn = dialog.findViewById(R.id.btnBuyProduct);
+        Button btn = dialog.findViewById(R.id.btnCart);
         btn.setText("返回");
         btn.setOnClickListener(new View.OnClickListener() {
             @Override

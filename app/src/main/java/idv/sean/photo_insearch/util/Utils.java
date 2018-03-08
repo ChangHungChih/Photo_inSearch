@@ -48,14 +48,20 @@ public class Utils {
     public static final int CHOOSE_MEMBER_TO_CASE = 16;
     public static final int SET_COMMENT = 17;
     public static final int APPLY_CASE = 18;
+    public static final int CHECKOUT = 19;
+    public static final int GET_ORDERMASTER = 20;
+    public static final int GET_ORDER_DETAIL = 21;
 
 //    public final static String URL_ANDOROID_CONTROLLER =
 //            "http://10.0.2.2:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
+//    public final static String URL_ANDOROID_CONTROLLER =
+//            "http://10.120.26.10:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
     public final static String URL_ANDOROID_CONTROLLER =
-            "http://10.120.26.10:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
-
+            "http://10.120.26.02:8081/BA106G1/ForAndroidServlet";
+//    public final static String WEBSOCKET_URI =
+//            "ws://10.120.26.10:8081/PhotoinSearch_DBPractic/AndroidChatWS/";
     public final static String WEBSOCKET_URI =
-            "ws://10.120.26.10:8081/PhotoinSearch_DBPractic/AndroidChatWS/";
+            "ws://10.120.26.02:8081/BA106G1/PhotoinSearchWS/";
 
     public static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
     public static ChatWebSocketClient chatWebSocketClient;

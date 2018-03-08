@@ -13,10 +13,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -42,11 +44,11 @@ public class MainActivity extends AppCompatActivity
     public static final int PAGER_QA = 4;
     public static final int PAGER_ABOUT_US = 5;
     public static final int PAGER_REPORT = 6;
+    public static final int PAGER_ORDER = 7;
     private final String TAG = "MainActivity";
     private TabLayout tabLayout;
     private Toolbar myToolBar;
     private ViewPager viewPager;
-    private EndDrawerToggle endDrawerToggle;
     private DrawerLayout drawerLayout;
     private TextView signIn, signOut, tvUser;
     private NavigationView navigationView;
@@ -64,6 +66,96 @@ public class MainActivity extends AppCompatActivity
         initBody();
         initTextViewButton();
     }
+
+    public void findViews() {
+        //toolbar setting
+        myToolBar = (Toolbar) findViewById(R.id.toolBar_main);
+        myToolBar.setLogo(R.mipmap.logo1);
+        myToolBar.setTitle(R.string.title);
+        myToolBar.setSubtitle("首頁");
+        setSupportActionBar(myToolBar);
+
+
+        //drawer setting
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle
+                (this,drawerLayout,myToolBar, R.string.drawer_open, R.string.drawer_close);
+//        EndDrawerToggle endDrawerToggle = new EndDrawerToggle
+//                (this, drawerLayout, myToolBar, R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+
+        navigationView = findViewById(R.id.navView);
+        /*let drawer can be touched */
+        navigationView.bringToFront();
+        navigationView.setNavigationItemSelectedListener(MainActivity.this);
+    }
+
+    public void initBody() {
+        myToolBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent = new Intent(MainActivity.this, ShoppingCartActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
+
+        //viewpager setting
+        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_HOME);
+        viewPager = (ViewPager) findViewById(R.id.viewPager_main);
+        viewPager.setAdapter(myPagerAdapter);
+
+        //tab setting
+        tabLayout = (TabLayout) findViewById(R.id.tabLayout_main);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    public void initTextViewButton() {
+        //set drawer header text button
+        View header = navigationView.getHeaderView(0);
+        tvUser = (TextView) header.findViewById(R.id.tvUser);
+        signIn = (TextView) header.findViewById(R.id.tvSignIn);
+        signOut = (TextView) header.findViewById(R.id.tvSignOut);
+
+        signIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+                Intent loginIntent = new Intent
+                        (MainActivity.this, LoginDialogActivity.class);
+                startActivityForResult(loginIntent, REQ_LOGIN);
+            }
+        });
+
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //clear login data
+                login = false;
+                sharedPreferences.edit().putBoolean("login", false).apply();
+                tvUser.setText("訪客");
+                signIn.setVisibility(View.VISIBLE);
+                signOut.setVisibility(View.INVISIBLE);
+                Utils.setMemVO(null);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                Utils.disConnectWebSocketServer();
+                //switch fragment to homepage
+                navigationView.getMenu().getItem(0).setChecked(true);
+                clearAllFragments();
+                myToolBar.setSubtitle("首頁");
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_HOME);
+                viewPager.setAdapter(myPagerAdapter);
+            }
+        });
+    }
+
+//    @Override
+//    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+//        super.onPostCreate(savedInstanceState);
+//        endDrawerToggle.syncState();
+//    }
 
     //檢查是否已經登入 check if login or not
     @Override
@@ -97,84 +189,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void findViews() {
-        //toolbar setting
-        myToolBar = (Toolbar) findViewById(R.id.toolBar_main);
-        myToolBar.setLogo(R.mipmap.logo1);
-        myToolBar.setTitle(R.string.title);
-        myToolBar.setSubtitle("首頁");
-        setSupportActionBar(myToolBar);
-
-
-        //drawer setting
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        endDrawerToggle = new EndDrawerToggle
-                (this, drawerLayout, myToolBar,
-                        R.string.drawer_open, R.string.drawer_close);
-        drawerLayout.addDrawerListener(endDrawerToggle);
-
-        navigationView = findViewById(R.id.navView);
-        /**let drawer can be touched */
-        navigationView.bringToFront();
-        navigationView.setNavigationItemSelectedListener(MainActivity.this);
-    }
-
-    @Override
-    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        endDrawerToggle.syncState();
-    }
-
-    public void initBody() {
-        //viewpager setting
-        myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_HOME);
-        viewPager = (ViewPager) findViewById(R.id.viewPager_main);
-        viewPager.setAdapter(myPagerAdapter);
-
-        //tab setting
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout_main);
-        tabLayout.setupWithViewPager(viewPager);
-    }
-
-    public void initTextViewButton() {
-        //set drawer header text button
-        View header = navigationView.getHeaderView(0);
-        tvUser = (TextView) header.findViewById(R.id.tvUser);
-        signIn = (TextView) header.findViewById(R.id.tvSignIn);
-        signOut = (TextView) header.findViewById(R.id.tvSignOut);
-
-        signIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerLayout.closeDrawer(GravityCompat.END);
-                Intent loginIntent = new Intent
-                        (MainActivity.this, LoginDialogActivity.class);
-                startActivityForResult(loginIntent, REQ_LOGIN);
-            }
-        });
-
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //clear login data
-                login = false;
-                sharedPreferences.edit().putBoolean("login", false).apply();
-                tvUser.setText("訪客");
-                signIn.setVisibility(View.VISIBLE);
-                signOut.setVisibility(View.INVISIBLE);
-                Utils.setMemVO(null);
-                drawerLayout.closeDrawer(GravityCompat.END);
-                Utils.disConnectWebSocketServer();
-                //switch fragment to homepage
-                navigationView.getMenu().getItem(0).setChecked(true);
-                clearAllFragments();
-                myToolBar.setSubtitle("首頁");
-                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_HOME);
-                viewPager.setAdapter(myPagerAdapter);
-            }
-        });
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -202,7 +216,7 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.mem:
                 if(login == false){
-                    drawerLayout.closeDrawer(GravityCompat.END);
+                    drawerLayout.closeDrawer(GravityCompat.START);
                     Intent loginIntent = new Intent
                             (MainActivity.this, LoginDialogActivity.class);
                     startActivityForResult(loginIntent, REQ_LOGIN);
@@ -211,6 +225,20 @@ public class MainActivity extends AppCompatActivity
                 clearAllFragments();
                 myToolBar.setSubtitle("會員專區");
                 myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_MEM);
+                viewPager.setAdapter(myPagerAdapter);
+                break;
+
+            case R.id.order:
+                if(login == false){
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    Intent loginIntent = new Intent
+                            (MainActivity.this, LoginDialogActivity.class);
+                    startActivityForResult(loginIntent, REQ_LOGIN);
+                    return false;
+                }
+                clearAllFragments();
+                myToolBar.setSubtitle("交易紀錄");
+                myPagerAdapter = new MyPagerAdapter(getSupportFragmentManager(), PAGER_ORDER);
                 viewPager.setAdapter(myPagerAdapter);
                 break;
 
@@ -250,7 +278,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         DrawerLayout drawerLayout = findViewById(R.id.drawer);
-        drawerLayout.closeDrawer(GravityCompat.END);
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -264,10 +292,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {//點擊後收合抽屜處理 handle drawer
         if (item.getItemId() == android.R.id.home) {
-            if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
-                drawerLayout.closeDrawer(GravityCompat.END);
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
             } else {
-                drawerLayout.openDrawer(GravityCompat.END);
+                drawerLayout.openDrawer(GravityCompat.START);
             }
             return true;
         }
@@ -276,8 +304,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {//返回鍵動作
-        if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            drawerLayout.closeDrawer(GravityCompat.END);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -335,4 +363,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        return true;
+    }
 }

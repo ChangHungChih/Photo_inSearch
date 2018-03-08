@@ -15,8 +15,14 @@
             android:title="會員專區" />
 
         <item
-            android:id="@+id/news"
+            android:id="@+id/order"
             android:orderInCategory="3"
+            android:title="交易紀錄"
+            />
+
+        <item
+            android:id="@+id/news"
+            android:orderInCategory="4"
             android:title="最新消息"
             />
 

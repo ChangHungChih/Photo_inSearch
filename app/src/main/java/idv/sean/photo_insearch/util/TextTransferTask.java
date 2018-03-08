@@ -256,6 +256,46 @@ public class TextTransferTask extends AsyncTask<Object, Void, Object> {
                     e.printStackTrace();
                 }
                 break;
+
+            case Utils.CHECKOUT:
+                memId = (String) objects[2];
+                int amount = (int) objects[3];
+                String cartList = (String) objects[4];
+                jsonObject.addProperty("action", "checkout");
+                jsonObject.addProperty("memId", memId);
+                jsonObject.addProperty("amount", amount);
+                jsonObject.addProperty("cartList", cartList);
+                try {
+                    String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
+                    return jsonIn;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Utils.GET_ORDERMASTER:
+                memId = (String) objects[2];
+                jsonObject.addProperty("action", "getOrderMaster");
+                jsonObject.addProperty("memId", memId);
+                try {
+                    String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
+                    return jsonIn;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+
+            case Utils.GET_ORDER_DETAIL:
+                String orderId = (String) objects[2];
+                jsonObject.addProperty("action", "getOrderDetail");
+                jsonObject.addProperty("orderId", orderId);
+                try {
+                    String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
+                    return jsonIn;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
             default:
                 break;
         }

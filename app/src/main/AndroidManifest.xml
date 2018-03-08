@@ -38,6 +38,8 @@
         <activity android:name=".activity.ChatActivity"/>
         <activity android:name=".activity.ShowCaseActivity"/>
         <activity android:name=".activity.ShowCaseDetailActivity"/>
+        <activity android:name=".activity.ShoppingCartActivity"/>
+        <activity android:name=".activity.ShowOrderDetailActivity"/>
 
     </application>
 

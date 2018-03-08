@@ -14,6 +14,7 @@ import idv.sean.photo_insearch.fragment.CaseFragment;
 import idv.sean.photo_insearch.fragment.MemberDetailFragment;
 import idv.sean.photo_insearch.fragment.MyCaseTypeFragment;
 import idv.sean.photo_insearch.fragment.NewsFragment;
+import idv.sean.photo_insearch.fragment.ProductOrderHistoryFragment;
 import idv.sean.photo_insearch.fragment.QAFragment;
 import idv.sean.photo_insearch.fragment.ReportFragment;
 import idv.sean.photo_insearch.fragment.UserChatFragment;
@@ -27,7 +28,7 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
     public MyPagerAdapter(FragmentManager fm, int pagerCode) {
         super(fm);
         pageList = new ArrayList<>();
-        switch (pagerCode){
+        switch (pagerCode) {
             case MainActivity.PAGER_HOME:
                 pageList.add(new Page(new PhotoFragment(), "Photos"));
                 pageList.add(new Page(new CaseFragment(), "Cases"));
@@ -36,8 +37,12 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
 
             case MainActivity.PAGER_MEM:
                 pageList.add(new Page(new MemberDetailFragment(), "Detail"));
-                pageList.add(new Page(new UserChatFragment(),"Chat"));
+                pageList.add(new Page(new UserChatFragment(), "Chat"));
                 pageList.add(new Page(new MyCaseTypeFragment(), "MyCases"));
+                break;
+
+            case MainActivity.PAGER_ORDER:
+                pageList.add(new Page(new ProductOrderHistoryFragment(), "Product"));
                 break;
 
             case MainActivity.PAGER_NEWS:
@@ -76,7 +81,7 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
         return pageList.get(position).getTitle();
     }
 
-    public void clearAll(){
+    public void clearAll() {
         pageList.clear();
     }
 }
