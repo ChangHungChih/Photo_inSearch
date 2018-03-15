@@ -24,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@drawable/p04"
+            android:adjustViewBounds="true"
             android:layout_margin="6dp"
             android:layout_gravity="center_horizontal"
             />

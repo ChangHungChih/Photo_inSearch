@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,11 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +33,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import idv.sean.photo_insearch.R;
@@ -114,14 +112,16 @@ public class ProductFragment extends Fragment {
             lp.width = (int) (d.getWidth() * 0.9);
             dialogWindow.setAttributes(lp);
 
+            //set data to every widget
             TextView prodName = myDialog.findViewById(R.id.tvShowProductTitle);
             prodName.setText(product.getProd_name());
+
             TextView prodPrice = myDialog.findViewById(R.id.tvShowProductPrice);
             prodPrice.setText("NTD: " + nf.format(product.getProd_price()) + "元");
             myDialog.findViewById(R.id.tvQtn).setVisibility(View.VISIBLE);
 
             TextView prodContent = myDialog.findViewById(R.id.tvShowProductContent);
-            prodContent.setText(product.getProd_detil());
+            prodContent.setText(product.getProd_detail());
             ImageView ivProd = myDialog.findViewById(R.id.ivShowProduct);
             ivProd.setImageBitmap(bitmap);
 
@@ -144,6 +144,8 @@ public class ProductFragment extends Fragment {
         }
 
         public void addToCart(ProductVO product, int qtn) {
+            if(qtn > 99)
+                qtn = 99;
             List<CartVO> cart = ShoppingCartActivity.getCart();
             if (cart == null) {
                 cart = new ArrayList<>();
@@ -196,9 +198,9 @@ public class ProductFragment extends Fragment {
             List<ProductVO> productsList = null;
             try {
                 String jsonIn = Utils.getRemoteData(url, jsonObject.toString());
-                Type type = new TypeToken<List<ProductVO>>() {
-                }.getType();
+                Type type = new TypeToken<List<ProductVO>>() {}.getType();
                 productsList = Utils.gson.fromJson(jsonIn, type);
+                //decode all pic from Base64 to byte[]
                 for (ProductVO product : productsList) {
                     byte[] pic = Base64.decode(product.getPicBase64(), Base64.DEFAULT);
                     product.setPicBase64(null);

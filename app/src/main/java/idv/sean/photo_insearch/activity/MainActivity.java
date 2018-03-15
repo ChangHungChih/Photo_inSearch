@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -21,6 +23,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity
     private ViewPager viewPager;
     private DrawerLayout drawerLayout;
     private TextView signIn, signOut, tvUser;
+    private ImageView ivHead;
     private NavigationView navigationView;
     private SharedPreferences sharedPreferences;
     private boolean login;
@@ -118,6 +122,7 @@ public class MainActivity extends AppCompatActivity
         tvUser = (TextView) header.findViewById(R.id.tvUser);
         signIn = (TextView) header.findViewById(R.id.tvSignIn);
         signOut = (TextView) header.findViewById(R.id.tvSignOut);
+        ivHead = (ImageView) header.findViewById(R.id.ivHead);
 
         signIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +142,8 @@ public class MainActivity extends AppCompatActivity
                 sharedPreferences.edit().putBoolean("login", false).apply();
                 tvUser.setText("訪客");
                 signIn.setVisibility(View.VISIBLE);
-                signOut.setVisibility(View.INVISIBLE);
+                signOut.setVisibility(View.GONE);
+                ivHead.setImageResource(android.R.drawable.sym_def_app_icon);
                 Utils.setMemVO(null);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 Utils.disConnectWebSocketServer();
@@ -168,7 +174,11 @@ public class MainActivity extends AppCompatActivity
             if (memJson.length() > 0) { //if memVO not null
                 MemVO memVO = Utils.gson.fromJson(memJson, MemVO.class);
                 Utils.setMemVO(memVO);
-                signIn.setVisibility(View.INVISIBLE);
+                Bitmap bitmap = BitmapFactory
+                        .decodeByteArray(memVO.getMem_pic(), 0, memVO.getMem_pic().length);
+                ivHead.setImageBitmap(bitmap);
+
+                signIn.setVisibility(View.GONE);
                 signOut.setVisibility(View.VISIBLE);
                 tvUser.setText(memVO.getMem_name());
                 //start webSocket
@@ -179,12 +189,12 @@ public class MainActivity extends AppCompatActivity
             } else {//if memVO = null
                 sharedPreferences.edit().putBoolean("login", false).apply();
                 signIn.setVisibility(View.VISIBLE);
-                signOut.setVisibility(View.INVISIBLE);
+                signOut.setVisibility(View.GONE);
             }
         } else {//login = false
             Utils.setMemVO(null);
             signIn.setVisibility(View.VISIBLE);
-            signOut.setVisibility(View.INVISIBLE);
+            signOut.setVisibility(View.GONE);
             tvUser.setText("訪客");
         }
     }

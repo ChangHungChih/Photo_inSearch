@@ -9,7 +9,7 @@ public class ProductVO implements Serializable {
     private String prod_name;
     private Integer prod_price;
     private Integer prod_status;
-    private String prod_detil;
+    private String prod_detail;
     private byte[] prod_pic;
     private String picBase64;
 
@@ -64,12 +64,12 @@ public class ProductVO implements Serializable {
         this.prod_status = prod_status;
     }
 
-    public String getProd_detil() {
-        return prod_detil;
+    public String getProd_detail() {
+        return prod_detail;
     }
 
-    public void setProd_detil(String prod_detil) {
-        this.prod_detil = prod_detil;
+    public void setProd_detail(String prod_detail) {
+        this.prod_detail = prod_detail;
     }
 
     public byte[] getProd_pic() {

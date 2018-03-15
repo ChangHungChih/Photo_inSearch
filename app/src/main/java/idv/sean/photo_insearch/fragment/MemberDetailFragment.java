@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -41,6 +42,7 @@ public class MemberDetailFragment extends Fragment {
     private List<String[]> memberDetail = new ArrayList<>();
     private MemberAdapter memberAdapter;
     private int point;
+    private double score;
 
     @Nullable
     @Override
@@ -51,12 +53,13 @@ public class MemberDetailFragment extends Fragment {
                 ("preference", Context.MODE_PRIVATE);
         memVO = Utils.gson.fromJson(pref.getString("memVO", ""), MemVO.class);
         point = pref.getInt("point", 0);
+        score = pref.getFloat("score", 0);
 
         View view = inflater.inflate(R.layout.fragment_member, container, false);
         btnRefresh = view.findViewById(R.id.btnRefresh);
         btnAddPoint = view.findViewById(R.id.btnAddPoint);
         initButtons();
-        initList(memVO, point);
+        initList(memVO, point, score);
         rvMember = view.findViewById(R.id.recyclerView_member);
         rvMember.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -67,7 +70,7 @@ public class MemberDetailFragment extends Fragment {
         return view;
     }
 
-    public void initList(MemVO memVO, int point) {
+    public void initList(MemVO memVO, int point, double score) {
         memberDetail.add(new String[]{"會員帳號:", memVO.getMem_acc()});
         memberDetail.add(new String[]{"姓名:", memVO.getMem_name()});
         memberDetail.add(new String[]{"性別:", memVO.getMem_sex()});
@@ -78,7 +81,8 @@ public class MemberDetailFragment extends Fragment {
         memberDetail.add(new String[]{"加入日期:", memVO.getMem_jointime().toString()});
         memberDetail.add(new String[]{"同意搜尋:", memVO.getMem_agree().equals("1") ? "是" : "否"});
         memberDetail.add(new String[]{"地址:", memVO.getMem_addr()});
-        memberDetail.add(new String[]{"持有點數:", String.valueOf(point)});
+        memberDetail.add(new String[]{"持有點數:", NumberFormat.getInstance().format(point)});
+        memberDetail.add(new String[]{"攝影師評價", String.valueOf(score)});
     }
 
     public void initButtons() {
@@ -93,8 +97,9 @@ public class MemberDetailFragment extends Fragment {
                     JsonObject jsonObject = Utils.gson.fromJson(jsonIn, JsonObject.class);
                     memVO = Utils.gson.fromJson(jsonObject.get("memVO").getAsString(), MemVO.class);
                     point = jsonObject.get("point").getAsInt();
+                    score = jsonObject.get("score").getAsDouble();
                     memberDetail.clear();
-                    initList(memVO, point);
+                    initList(memVO, point, score);
                     memberAdapter.notifyDataSetChanged();
 
                     //set new member data to SharePreference
@@ -126,7 +131,7 @@ public class MemberDetailFragment extends Fragment {
                 Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
                 lp.height = (int) (d.getHeight() * 0.8);
-                lp.width = (int) (d.getWidth() * 0.8);
+                lp.width = (int) (d.getWidth() * 0.9);
                 dialogWindow.setAttributes(lp);
 
                 final EditText cardNo, point;
@@ -144,6 +149,7 @@ public class MemberDetailFragment extends Fragment {
                 cancel.setText("返回");
                 submit.setText("加值");
 
+                //init magic button (insert card number)
                 magic.setVisibility(View.VISIBLE);
                 magic.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -160,7 +166,13 @@ public class MemberDetailFragment extends Fragment {
                 submit.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        int pointAdd = Integer.parseInt(point.getText().toString());
+                        String pointStr = point.getText().toString();
+                        if (point.length() > 9) {  //constraint insert number digits
+                            Toast.makeText(getContext(),
+                                    "請檢查金額", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        int pointAdd = Integer.parseInt(pointStr);
                         new TextTransferTask().execute
                                 (Utils.INSERT_POINT, Utils.URL_ANDOROID_CONTROLLER, pointAdd);
                         cardNo.setText(null);

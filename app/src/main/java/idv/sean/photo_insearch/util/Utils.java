@@ -52,17 +52,17 @@ public class Utils {
     public static final int GET_ORDERMASTER = 20;
     public static final int GET_ORDER_DETAIL = 21;
 
-//    public final static String URL_ANDOROID_CONTROLLER =
+    //    public final static String URL_ANDOROID_CONTROLLER =
 //            "http://10.0.2.2:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
 //    public final static String URL_ANDOROID_CONTROLLER =
-//            "http://10.120.26.10:8081/PhotoinSearch_DBPractic/ForAndroidServlet";
+//            "http://10.120.26.02:8081/BA106G1/ForAndroidServlet";
     public final static String URL_ANDOROID_CONTROLLER =
-            "http://10.120.26.02:8081/BA106G1/ForAndroidServlet";
-//    public final static String WEBSOCKET_URI =
-//            "ws://10.120.26.10:8081/PhotoinSearch_DBPractic/AndroidChatWS/";
-    public final static String WEBSOCKET_URI =
-            "ws://10.120.26.02:8081/BA106G1/PhotoinSearchWS/";
+            "http://13.231.237.9:8081/BA106G1/ForAndroidServlet";
 
+//    public final static String WEBSOCKET_URI =
+//            "ws://10.120.26.02:8081/BA106G1/PhotoinSearchWS/";
+        public final static String WEBSOCKET_URI =
+            "ws://13.231.237.9:8081/BA106G1/PhotoinSearchWS/";
     public static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
     public static ChatWebSocketClient chatWebSocketClient;
     private static Map<String, String> userNamesMap = new HashMap<>();
@@ -157,6 +157,7 @@ public class Utils {
         connection.setUseCaches(false); // do not use a cached copy
         connection.setRequestMethod("POST");
         connection.setRequestProperty("charset", "UTF-8");
+        connection.setConnectTimeout(10000);
 
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
 
@@ -168,7 +169,7 @@ public class Utils {
         //從網頁取得回應 get response from web
         int responseCode = connection.getResponseCode();
         StringBuilder jsonIn = new StringBuilder();
-        if (responseCode == 200) {
+        if (responseCode == HttpURLConnection.HTTP_OK) {//200
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
             while ((line = br.readLine()) != null) {

@@ -94,7 +94,7 @@ public class NewsFragment extends Fragment {
                     Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
                     WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
                     lp.height = (int) (d.getHeight() * 0.8);
-                    lp.width = (int) (d.getWidth() * 0.8);
+                    lp.width = (int) (d.getWidth() * 0.9);
                     dialogWindow.setAttributes(lp);
 
                     TextView newsTitle = myDialog.findViewById(R.id.tvShowProductTitle);

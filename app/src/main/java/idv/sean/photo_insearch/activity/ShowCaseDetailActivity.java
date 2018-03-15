@@ -182,8 +182,10 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
                                 }
                             }
                         }
+
                         @Override
-                        public void onNothingSelected(AdapterView<?> adapterView) {}
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+                        }
                     });
 
                     btnSubmit.setText("確定成案");
@@ -270,6 +272,9 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
                     if (idCheck) {        //id checked
                         new TextTransferTask().execute(Utils.FINISH_CASE,
                                 Utils.URL_ANDOROID_CONTROLLER, caseVO.getCase_id());
+                        Toast.makeText(ShowCaseDetailActivity.this,
+                                "案件已完成", Toast.LENGTH_SHORT).show();
+                        finish();
                     } else {             //id not checked
                         Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                         try {
@@ -433,8 +438,8 @@ public class ShowCaseDetailActivity extends AppCompatActivity {
         WindowManager wm = getWindowManager();
         Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
         WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
-        lp.height = (int) (d.getWidth() * 0.8);
-        lp.width = (int) (d.getWidth() * 0.8);
+        lp.height = (int) (d.getWidth() * 0.9);
+        lp.width = (int) (d.getWidth() * 0.9);
         dialogWindow.setAttributes(lp);
 
         TextView name = dialog.findViewById(R.id.tvShowProductTitle);

@@ -98,7 +98,7 @@ public class ShowPhotoActivity extends AppCompatActivity {
                     WindowManager wm = getWindowManager();
                     Display d = wm.getDefaultDisplay(); // 取得螢幕寬、高用
                     WindowManager.LayoutParams lp = dialogWindow.getAttributes(); // 獲取對話視窗當前的参數值
-                    lp.height = (int) (d.getWidth() * 0.9);
+                    lp.height = (int) (d.getHeight() * 0.8);
                     lp.width = (int) (d.getWidth() * 0.9);
                     dialogWindow.setAttributes(lp);
 
@@ -153,7 +153,7 @@ public class ShowPhotoActivity extends AppCompatActivity {
         protected void onPreExecute() {
             dialog = new ProgressDialog(ShowPhotoActivity.this);
             dialog.setMessage("Loading");
-//            dialog.show();
+            dialog.show();
         }
 
         @Override
@@ -190,7 +190,7 @@ public class ShowPhotoActivity extends AppCompatActivity {
                 ft.add(R.id.clShowPhoto, noDataFragment).commit();
             }
             rvPhotos.setAdapter(new PhotoAdapter(photoList));
-//            dialog.cancel();
+            dialog.cancel();
         }
     }
 }

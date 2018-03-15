@@ -84,7 +84,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
                     MemVO memVO = Utils.gson.fromJson(memJson, MemVO.class);
                     String memId = memVO.getMem_id();
                     String total = tvSum.getText().toString();
-                    //從字串中切出數字再將逗號替換成"" ，
+                    //從字串中切出數字再將逗號刪除
                     int amount = Integer.valueOf(total.substring(4, total.length() - 2)
                             .replace(",", ""));
                     String cartList = Utils.gson.toJson(cart);

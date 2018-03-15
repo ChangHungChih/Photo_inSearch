@@ -24,6 +24,7 @@ public class LoginDialogActivity extends AppCompatActivity {
     private TextView tvMessage;
     private MemVO memVO = null;
     private int point = 0;
+    private double score = 0d;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class LoginDialogActivity extends AppCompatActivity {
                             .putBoolean("login", true)
                             .putString("memVO", memJson)
                             .putInt("point", point)
+                            .putFloat("score", (float) score)
                             .apply();
                     setResult(RESULT_OK);
                     finish();
@@ -111,6 +113,7 @@ public class LoginDialogActivity extends AppCompatActivity {
             //set memVO and point data
             memVO = Utils.gson.fromJson(jsonObject.get("memVO").getAsString(), MemVO.class);
             point = jsonObject.get("point").getAsInt();
+            score = jsonObject.get("score").getAsDouble();
 
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -18,28 +18,7 @@ public class MemVO implements Serializable {
     private String mem_level;
     private String mem_state;
     private String mem_agree;
-
-    public MemVO() {
-    }
-
-    public MemVO(String mem_id, String mem_name, String mem_acc, String mem_pwd,
-                 String mem_sex, Date mem_bd, String mem_mail, String mem_phone,
-                 String mem_addr, Date mem_jointime, String mem_level, String mem_state,
-                 String mem_agree) {
-        this.mem_id = mem_id;
-        this.mem_name = mem_name;
-        this.mem_acc = mem_acc;
-        this.mem_pwd = mem_pwd;
-        this.mem_sex = mem_sex;
-        this.mem_bd = mem_bd;
-        this.mem_mail = mem_mail;
-        this.mem_phone = mem_phone;
-        this.mem_addr = mem_addr;
-        this.mem_jointime = mem_jointime;
-        this.mem_level = mem_level;
-        this.mem_state = mem_state;
-        this.mem_agree = mem_agree;
-    }
+    private byte[] mem_pic;
 
     public String getMem_id() {
         return mem_id;
@@ -118,5 +97,13 @@ public class MemVO implements Serializable {
     }
     public void setMem_agree(String mem_agree) {
         this.mem_agree = mem_agree;
+    }
+
+    public byte[] getMem_pic() {
+        return mem_pic;
+    }
+
+    public void setMem_pic(byte[] mem_pic) {
+        this.mem_pic = mem_pic;
     }
 }
